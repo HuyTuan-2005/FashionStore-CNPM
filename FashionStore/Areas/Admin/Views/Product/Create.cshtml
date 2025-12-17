@@ -1,0 +1,279 @@
+﻿@model FashionStore.Models.Product
+@{
+    ViewBag.Title = "Thêm sản phẩm";
+}
+
+
+@section styles
+{
+    <link rel="stylesheet" href="~/Content/css/Admin/product-add.css"/>
+}
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a href="@Url.Action("Index", "Dashboard")">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <a href="@Url.Action("Index", "Product")">Sản phẩm</a>
+    <span class="breadcrumb-separator">/</span>
+    <span>Thêm sản phẩm</span>
+</div>
+
+<!-- Content -->
+<div class="content-area">
+    <div class="d-flex justify-content-between align-items-center mb-6">
+        <div class="d-flex align-items-center gap-4">
+            <a href="@Url.Action("Index", "Product")" class="btn btn-icon btn-outline">
+                <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" stroke="currentColor" fill="none"
+                     stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+            </a>
+            <div>
+                <h1>Thêm sản phẩm mới</h1>
+                <p class="text-muted mt-1">Nhập thông tin sản phẩm mới vào hệ thống</p>
+            </div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Create", "Product", FormMethod.Post, new { enctype = "multipart/form-data", id = "productForm", onsubmit = "handleSubmit(event)" }))
+    {
+        @Html.AntiForgeryToken()
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+            <!-- Left Column -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Basic Info -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Thông tin cơ bản</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="form-label">Tên sản phẩm *</label>
+                            <input type="text" name="ProductName" class="form-control" required
+                                   placeholder="Nhập tên sản phẩm">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="form-label">Mô tả chi tiết</label>
+                            <textarea name="description" class="form-control" rows="6"
+                                      placeholder="Mô tả đầy đủ về sản phẩm, tính năng, thông số kỹ thuật..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pricing -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Giá & Khuyến mãi</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="grid grid-cols-2">
+                            <div class="form-group">
+                                <label class="form-label">Giá bán *</label>
+                                <input type="number" name="BasePrice" class="form-control" required value="29990000" min="0"
+                                       step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">% Giảm giá</label>
+                                <input type="number" name="DiscountPercent" class="form-control" value="0" min="0" max="100">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Variants -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Biến thể sản phẩm</h3>
+                        <div class="text-muted" style="margin-top: 0.5rem;">Thêm các biến thể như size, màu sắc cho sản
+                            phẩm
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="grid grid-cols-2">
+
+                            <!-- Sizes -->
+                            <div class="form-group">
+                                <label class="form-label">Size</label>
+                                <div id="sizeGroup">
+
+                                    @foreach(var i in ViewBag.Sizes)
+                                    {
+                                        <label class="size-pill" data-value="@i.SizeName">
+                                            @i.SizeName
+                                            <input name="sizes" type="checkbox" class="chk-size" data-id="@i.SizeID" value="@i.SizeName"
+                                                   onchange="updateVariants()">
+                                        </label>
+                                    }
+                                    <label class="size-pill" data-value="XXL">
+                                        XXL
+                                        <input name="sizes" type="checkbox" class="chk-size" value="XXL"
+                                               onchange="updateVariants()">
+                                    </label>
+
+
+                                </div>
+                            </div>
+
+                            <!-- Colors -->
+                            <div class="form-group">
+                                <label class="form-label">Màu</label>
+                                <div id="colorGroup" style="display:flex; flex-wrap:wrap; gap:12px;">
+
+                                    @foreach(FashionStore.Models.Color i in ViewBag.Colors)
+                                    {
+                                        <label title="@i.ColorName">
+                                            <span class="swatch" style="background:@i.HexCode">
+                                                <input name="colors" type="checkbox" class="chk-color" data-id="@i.ColorID" value="@i.ColorName"
+                                                       onchange="updateVariants()">
+                                                <span class="check">✓</span>
+                                            </span>
+                                        </label>
+                                    }
+
+                                </div>
+                            </div>
+
+                        </div>
+
+
+                        <div id="variantsContainer">
+                            <div style="text-align: center; padding: 2rem; color: var(--muted-foreground);">
+                                <p>Chọn màu sắc và kích thước để tạo biến thể</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Action Buttons -->
+                <div class="card-content p-0">
+                    <div class="d-flex justify-content-end align-items-center gap-3">
+                        <a href="@Url.Action("Index", "Product")" class="btn btn-outline">
+                            Hủy
+                        </a>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-primary" onclick="handleSubmit(this)">
+                                Thêm sản phẩm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Status -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Trạng thái</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="form-label">Trạng thái sản phẩm *</label>
+                            <select name="IsActive" class="form-control" required>
+                                <option value="True" selected>Còn hàng</option>
+                                <option value="False">Hết hàng</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Phân loại</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="form-label">Danh mục *</label>
+                            <select name="CategoryID" class="form-control" required="">
+                                <option value="">Chọn danh mục</option>
+                                @foreach (var i in ViewBag.Categories)
+                                {
+                                    <option value="@i.CategoryID">@i.CategoryName</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Images -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Hình ảnh</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="form-group">
+                            <label class="form-label">Ảnh chính *</label>
+                            <div
+                                style="border: 2px dashed var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; cursor: pointer;"
+                                onclick="document.getElementById('mainImage').click()">
+                                <input type="file" id="mainImage" name="mainImage" accept="image/*"
+                                       style="display: none;" onchange="previewImage(this, 'mainImagePreview')">
+                                <div id="mainImagePreview">
+                                    <svg
+                                        style="width: 48px; height: 48px; color: var(--muted-foreground); margin: 0 auto 1rem;"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    <p>Click để tải ảnh lên</p>
+                                    <p class="text-muted" style="font-size: 12px;">PNG, JPG hoặc WEBP (tối đa 5MB)</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ảnh phụ</label>
+                            <div
+                                style="border: 2px dashed var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; cursor: pointer;"
+                                onclick="document.getElementById('additionalImages').click()">
+                                <input type="file" id="additionalImages" name="additionalImages" accept="image/*"
+                                       multiple="" style="display: none;"
+                                       onchange="previewMultipleImages(this, 'additionalImagesPreview')">
+                                <div id="additionalImagesPreview">
+                                    <svg
+                                        style="width: 32px; height: 32px; color: var(--muted-foreground); margin: 0 auto 0.5rem;"
+                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="16 16 12 12 8 16"></polyline>
+                                        <line x1="12" y1="12" x2="12" y2="21"></line>
+                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                        <polyline points="16 16 12 12 8 16"></polyline>
+                                    </svg>
+                                    <p style="font-size: 12px;">Tải nhiều ảnh (Tối đa 10 ảnh)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    }
+
+</div>
+
+@section Scripts {
+    <script>
+        setActiveNav('products');
+
+        function handleSubmit() {
+            if (validateForm('productForm')) {
+                showToast('Đã thêm sản phẩm thành công!', 'success');
+            }
+        }
+    </script>
+
+    <script src="~/Content/js/Admin/product-admin.js"></script>
+}

@@ -1,0 +1,27 @@
+﻿@model IEnumerable<FashionStore.Models.CategoryGroup>
+
+@{
+    ViewBag.Title = "DanhMuc";
+}
+
+
+@foreach (var item in Model)
+{
+    <li class="nav-item dropdown me-4">
+        <a class="nav-link dropdown-toggle" href="#" id="dropdownPages" role="button" data-bs-toggle="dropdown"   aria-haspopup="true"  aria-expanded="false">
+            @item.GroupName
+        </a>
+
+        <ul class="dropdown-menu list-unstyled" aria-labelledby="dropdownPages">
+            @foreach (var sub in item.Categories)
+            {
+                <li>
+                    <a  class="dropdown-item item-anchor" href="@Url.Action("Index", "Product", new { catId = sub.CategoryID })">
+                        @sub.CategoryName
+                    </a>
+                </li>
+            }
+        </ul>
+    </li>
+}
+

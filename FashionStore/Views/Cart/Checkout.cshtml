@@ -1,0 +1,102 @@
+﻿@model FashionStore.Models.CustomerProfile
+@{
+    ViewBag.Title = "Xác nhận thông tin đặt hàng";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            
+            <div class="profile-form mb-5">
+                <!-- Header -->
+                <div class="mb-4">
+                    <h2 class="fs-3 mb-2">Xác nhận thông tin đặt hàng</h2>
+                    <p class="text-muted">Cập nhật thông tin nhận hàng của bạn để hoàn thiện đơn hàng.</p>
+                </div>
+
+                @using (Html.BeginForm("Checkout", "Cart", FormMethod.Post, new { @class = "profile-form-content", id = "profileForm" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                    <!-- Hidden ProfileID -->
+                    @Html.HiddenFor(model => model.ProfileID)
+
+                    <!-- Số điện thoại và Email -->
+                    <div class="row mb-3">
+                        <!-- Họ và tên -->
+                        <div class="col-md-6 mb-3">
+                            <label for="FullName" class="form-label fs-6 text-dark fw-semibold">
+                                Họ và tên <span class="text-danger">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.FullName, new { 
+                                @class = "form-control shadow-none px-3 py-2", 
+                                placeholder = "Nhập họ và tên đầy đủ",
+                                required = "required"
+                            })
+                            @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger small" })
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="PhoneNumber" class="form-label fs-6 text-dark fw-semibold">
+                                Số điện thoại <span class="text-danger">*</span>
+                            </label>
+                            @Html.TextBoxFor(model => model.PhoneNumber, new
+                            {
+                                @class = "form-control shadow-none px-3 py-2",
+                                placeholder = "0912345678",
+                                type = "tel",
+                                required = "required"
+                            })
+                            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger small" })
+                        </div>
+
+                    </div>
+
+
+                    <!-- Quận/Huyện và Thành phố -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="District" class="form-label fs-6 text-dark fw-semibold">
+                                Quận/Huyện
+                            </label>
+                            @Html.TextBoxFor(model => model.District, new { 
+                                @class = "form-control shadow-none px-3 py-2", 
+                                placeholder = "Quận 1, Quận 7..."
+                            })
+                            @Html.ValidationMessageFor(model => model.District, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="City" class="form-label fs-6 text-dark fw-semibold">
+                                Tỉnh/Thành phố
+                            </label>
+                            @Html.TextBoxFor(model => model.City, new { 
+                                @class = "form-control shadow-none px-3 py-2", 
+                                placeholder = "TP. Hồ Chí Minh, Hà Nội..."
+                            })
+                            @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger small" })
+                        </div>
+                    </div>
+
+                    <!-- Địa chỉ -->
+                    <div class="mb-3">
+                        <label for="Address" class="form-label fs-6 text-dark fw-semibold">
+                            Địa chỉ
+                        </label>
+                        @Html.TextBoxFor(model => model.Address, new { 
+                            @class = "form-control shadow-none px-3 py-2", 
+                            placeholder = "Số nhà, tên đường"
+                        })
+                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger small" })
+                    </div>
+                    <button type="submit" name="submit" class="btn btn-primary btn-rounded-none  w-100 mb-1">Xác nhận</button>
+                    <a href="@Url.Action("Index")" class="btn btn-dark btn-rounded-none  w-100">Trở lại</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+}

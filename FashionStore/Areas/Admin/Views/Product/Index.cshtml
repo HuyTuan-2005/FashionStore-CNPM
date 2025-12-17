@@ -1,0 +1,193 @@
+﻿@model List<FashionStore.Models.Product>
+
+@{
+    ViewBag.Title = "Quản lý Sản phẩm";
+}
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <a href="@Url.Action("Index", "Dashboard")">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <span>Sản phẩm</span>
+</div>
+
+<!-- Content -->
+<div class="content-area">
+    <div class="d-flex justify-content-between align-items-center mb-6">
+        <div>
+            <h1>Quản lý Sản phẩm</h1>
+            <p class="text-muted mt-1">Danh sách tất cả sản phẩm trong hệ thống</p>
+        </div>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <svg style="width: 16px; height: 16px; margin-right: 0.5rem;" viewBox="0 0 24 24" 
+                 stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Thêm sản phẩm
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <h3 class="card-title">Tìm kiếm & Lọc</h3>
+        </div>
+        <div class="card-content">
+            @using (Html.BeginForm("Index", "Product", FormMethod.Get, new { @id = "filterForm", @class = "grid grid-cols-3" }))
+            {
+                @Html.TextBox("search", "", new { @id = "searchInput", @class = "form-control", @placeholder = "Tìm kiếm theo tên sản phẩm...", type = "search" })
+                @* <input name="search" type="search" id="searchInput" class="form-control" *@
+                @*        placeholder="Tìm kiếm sản phẩm..."> *@
+
+                @Html.DropDownList("categoryId", new SelectList(ViewBag.Categories, "CategoryId", "CategoryName"), "Tất cả danh mục", new { @class = "form-control", @id = "categoryFilter", data_filter = "" })
+                @* <select class="form-control" data-filter id="categoryFilter"> *@
+                @*     @foreach (Category i in ViewBag.Categories) *@
+                @*     { *@
+                @*         <option value="@i.CategoryID">@i.CategoryName</option> *@
+                @*     } *@
+                @* </select> *@
+
+                @Html.DropDownList("status", new SelectList(ViewBag.Status, "StatusValue", "StatusName"), "Tất cả trạng thái", new { @class = "form-control", @id = "statusFilter", data_filter = "" })
+                @* <select name="status" class="form-control" data-filter id="statusFilter"> *@
+                @*     <option value>Tất cả trạng thái</option> *@
+                @*     <option value="Còn hàng">Còn hàng</option> *@
+                @*     <option value="Hết hàng">Hết hàng</option> *@
+                @* </select> *@
+            }
+            <button class="btn btn-primary btn-sm mt-3" onclick="submitFilters()">Lọc</button>
+            <button class="btn btn-outline btn-sm mt-3" onclick="clearFilters()">Xóa bộ lọc</button>
+        </div>
+    </div>
+
+    <!-- Bulk Actions Bar -->
+    <div id="bulkActionsBar" class="card mb-6 hidden" style="background-color: var(--accent);">
+        <div class="card-content">
+            <div class="d-flex flex-column gap-3">
+                <span><strong><span id="selectedCount">0</span></strong> sản phẩm đã chọn</span>
+                <div class="d-flex gap-3 align-items-center">
+                    <div>Trạng thái:</div>
+                    <label class="form-check p-0">
+                        <input type="radio" name="status" checked="checked" value="True"/>
+                        Còn hàng
+                    </label>
+                    <label class="form-check">
+                        <input class="" type="radio" name="status" value="False"/>
+                        Hết hàng
+                    </label>
+                </div>
+                <div>
+                    <button class="btn btn-success btn-sm" onclick="bulkUpdateStatus('@Url.Action("EditManyStatus")')">
+                        Cập nhật
+                    </button>
+
+                    <button class="btn btn-danger btn-sm"
+                            onclick="confirmBulkDelete('@Url.Action("DeleteMany")')">Xóa
+                    </button>
+                    @* <button class="btn btn-secondary btn-sm" onclick="bulkUpdateStatus('inactive')">Ẩn</button> *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card">
+        <div class="card-content" style="padding: 0;">
+            <div class="table-container">
+                <table class="table m-0 " id="dataTable">
+                    <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="selectAll" class="checkbox">
+                        </th>
+                        <th>
+                            Sản phẩm
+                        </th>
+                        <th>Danh mục</th>
+                        <th>Giá</th>
+                        <th>Tồn kho</th>
+                        <th>Trạng thái</th>
+                        <th style="width: 150px;">Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @if (Model.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <div>Không tìm thấy sản phẩm nào.</div>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var i in Model)
+                        {
+                            <tr>
+                                <td><input data-id="@i.ProductID" btn-checkbox type="checkbox"
+                                           class="checkbox row-checkbox"></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img title="@i.ProductName" src="@Url.Content("~/Content/img/products/" + i.ProductImages.FirstOrDefault()?.ImageUrl)" alt="@i.ProductID"
+                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: var(--radius);">
+                                        <div>
+                                            <strong>@i.ProductName</strong>
+                                            <p class="text-description" style="font-size: 12px;">@i.Description</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@i.Category.CategoryName</td>
+                                <td><strong>@i.BasePrice.ToString("N0") đ</strong></td>
+                                <td>@i.ProductVariants.Sum(x => x.ProductID == i.ProductID ? x.Stock : 0)</td>
+                                <td>
+                                    <button btn-change-status data-status="@i.IsActive" data-id="@i.ProductID"
+                                            class="badge badge-@((i.IsActive != null && i.IsActive.Value) ? "success" : "danger") border-0">@((i.IsActive != null && i.IsActive.Value) ? "Còn hàng" : "Hết hàng")</button>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a class="btn btn-outline btn-sm"
+                                           href="@Url.Action("Edit", new { id = i.ProductID })">Sửa</a>
+                                        <button class="btn btn-danger btn-sm"
+                                                onclick="confirmDelete('@i.ProductID', '@i.ProductName', 'sản phẩm')">
+                                            Xóa
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    @{
+        Html.RenderPartial("Partial/_Pagination", new ViewDataDictionary
+        {
+            { "currentPage", ViewBag.CurrentPage },
+            { "totalPages", ViewBag.TotalPages }
+        });
+    }
+</div>
+
+@section forms {
+    @using (Html.BeginForm("EditStatus", "Product", FormMethod.Post, new { @class = "display-none", id = "form-change-status" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("status")
+        @Html.Hidden("productId")
+    }
+
+    @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { @class = "display-none", id = "form-delete" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("id")
+    }
+}
+
+
+
+@section Scripts {
+    <script src="~/Content/js/Admin/product-admin.js"></script>
+}

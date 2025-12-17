@@ -1,0 +1,46 @@
+﻿.accordion-button:not(.collapsed) {
+    background-color: #f8f9fa;
+    color: #212529;
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(0,0,0,.125);
+}
+
+.accordion-item {
+    overflow: hidden;
+}
+
+.accordion-button::after {
+    margin-left: auto;
+}
+
+.nav-pills .nav-link {
+    color: #6c757d;
+    border-radius: 50px;
+    padding: 8px 20px;
+    margin-right: 8px;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #0d6efd;
+}
+
+.nav-pills .nav-link:hover {
+    background-color: #e9ecef;
+}
+
+.nav-pills .nav-link.active:hover {
+    background-color: #0d6efd;
+}
+
+@media print {
+    .accordion-button, .btn, nav, .nav-pills {
+        display: none !important;
+    }
+    .accordion-collapse {
+        display: block !important;
+    }
+}

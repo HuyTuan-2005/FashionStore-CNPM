@@ -1,0 +1,26 @@
+﻿
+
+@* <!-- Pagination --> *@
+<div class="pagination">
+    @if (ViewBag.CurrentPage > 1)
+    {
+        <a data-page-number="@(ViewBag.CurrentPage-1)" href="#">« Trước</a>
+    }
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+        if (ViewBag.CurrentPage == i)
+        {
+            <span class="active">@i</span>
+        }
+        else
+        {
+            <a data-page-number="@i" href="#">@i</a>
+        }
+    }
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+    {
+        <a data-page-number="@(ViewBag.CurrentPage + 1)" href="#">Sau »</a>
+    }
+</div>
+
+<script src="~/Content/js/pagination.js"></script>

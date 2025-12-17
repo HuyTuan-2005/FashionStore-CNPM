@@ -1,0 +1,188 @@
+﻿@using FashionStore.Controllers
+@using FashionStore.ViewModels
+@model List<FashionStore.Models.ProductVariant>
+@{
+    ViewBag.Title = "Giỏ hàng";
+    decimal totalAmount = 0;
+
+    var cart = Session["Cart"] as List<CartItemViewModel>;
+    if (cart == null)
+    {
+        cart = new List<CartItemViewModel>();
+        Session["Cart"] = cart;
+    }
+}
+
+
+<section id="cart" style="min-height: 70vh;">
+    <div class="container">
+        @if (Model == null || !Model.Any())
+        {
+            <div class="d-flex align-items-center justify-content-center" style="height: calc(100vh - 150px)">
+                <div class="text-center">
+                    <i class="bi bi-cart-x" style="font-size: 5rem; color: #ccc;"></i>
+                    <h4 class="mt-3 text-muted">Giỏ hàng trống</h4>
+                    <p class="text-muted">Hãy thêm sản phẩm vào giỏ hàng để tiếp tục mua sắm</p>
+                    <a href="@Url.Action("Index", "Product")" class="btn btn-primary btn-rounded-none mt-3">
+                        <i class="bi bi-arrow-left me-2"></i>Tiếp tục mua sắm
+                    </a>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                
+                <a href="@Url.Action("Index", "Product")" class="">
+                    <i class="bi bi-arrow-left me-2"></i>Quay lại
+                </a>
+            </div>
+            <div class="row">
+                <!-- Cart Items -->
+                <div class="col-lg-8 col-md-12 mb-5">
+                    <!-- Page Title -->
+                    <div class="mb-5">
+                        <h1 class="display-6 mb-2">Giỏ hàng của bạn</h1>
+                        <p class="text-muted fs-5">Bạn có <span class="text-dark fw-bold">@Model.Count</span> sản phẩm trong giỏ hàng</p>
+                    </div>
+                    <div class="cart-table">
+                        <!-- Header -->
+                        <div class="cart-header">
+                            <div class="row">
+                                <div class="col-5">
+                                    <h6 class="text-uppercase text-muted">Sản phẩm</h6>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <h6 class="text-uppercase text-muted">Số lượng</h6>
+                                </div>
+                                <div class="col-3 text-end">
+                                    <h6 class="text-uppercase text-muted">Thành tiền</h6>
+                                </div>
+                                <div class="col-2 text-end">
+                                    <h6 class="text-uppercase text-muted">Thao tác</h6>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <!-- Cart Items Loop -->
+                        @foreach (var item in Model)
+                        {
+                            var quantity = cart.FirstOrDefault(c => c.VariantID == item.VariantID).Quantity;
+                            var itemPrice = item?.Product.BasePrice ?? 0;
+                            var itemTotal = itemPrice * quantity;
+                            totalAmount += itemTotal;
+
+                            <div class="cart-item border-top py-4">
+                                <div class="row align-items-center">
+                                    <!-- Product Info -->
+                                    <div class="col-lg-5 col-md-5 mb-3 mb-lg-0">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3" style="width: 100px; height: 100px;">
+                                                <img
+                                                    src="@Url.Content("~/Content/img/products/" + (item?.Product.ProductImages.FirstOrDefault(img => img.IsPrimary.Value).ImageUrl ?? "default.jpg"))"
+                                                    alt="@item.Product.ProductName"
+                                                    class="img-fluid rounded"
+                                                    style="width: 100%; height: 100%; object-fit: cover;">
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1 fs-5">
+                                                    <a href="@Url.Action("Details", "Product", new { id = item.ProductID })"
+                                                       class="text-decoration-none text-dark fw-bold">
+                                                        @item.Product.ProductName
+                                                    </a>
+                                                </h6>
+                                                <div class="small text-muted mb-0 fs-6">
+                                                    <div class="text-dark me-1">
+                                                        Màu: @item.Color.ColorName
+                                                    </div>
+                                                    <div class="text-dark">
+                                                        Size: @item.Size.SizeName
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quantity -->
+                                    <div class="col-2">
+                                        <div style="max-width: 100px; margin: auto;">
+                                            <input type="number"
+                                                   id="quantity-@item.VariantID"
+                                                   class="form-control text-center"
+                                                   value="@quantity"
+                                                   min="1"
+                                                   max="@(item?.Stock ?? 100)"
+                                                   readonly>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Subtotal -->
+                                    <div class="col-lg-3 col-md-3 col-4 text-end">
+                                <span class="">
+                                    @itemTotal.ToString("N0")đ
+                                </span>
+                                    </div>
+
+                                    <!-- Remove Button -->
+                                    <div class="col-2 text-center">
+                                        <a href="@Url.Action("Remove", new { id = item.VariantID })"
+                                           class="btn btn-link text-danger p-0"
+                                           title="Xóa">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Cart Summary --><!-- Cart Summary -->
+                <div class="col-lg-4 col-md-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <h4 class="mb-4">Tổng đơn hàng</h4>
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Tạm tính:</span>
+                                <span class="fw-bold" id="subtotal">@totalAmount.ToString("N0")đ</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="text-muted">Phí vận chuyển:</span>
+                                <span class="text-success">Miễn phí</span>
+                            </div>
+
+                            <hr>
+
+                            <div class="d-flex justify-content-between mb-4">
+                                <span class="h5 mb-0">Tổng cộng:</span>
+                                <span class="h5 mb-0 text-danger fw-bold" id="grandTotal">
+                                @totalAmount.ToString("N0")đ
+                            </span>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-grid gap-2">
+
+                                <a href="@Url.Action("Index", "Product")" class="btn btn-dark  btn-rounded-none w-100">
+                                    <i class="bi bi-arrow-left me-2"></i>Tiếp
+                                    tục mua sắm</a>
+                                @if (Model != null && Model.Any())
+                                {
+                                    <a href="@Url.Action("Checkout", "Cart")"
+                                       class="btn btn-primary btn-rounded-none w-100">
+                                        <i class="fa-solid fa-credit-card me-2"></i>Thanh toán
+                                    </a>
+                                }
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

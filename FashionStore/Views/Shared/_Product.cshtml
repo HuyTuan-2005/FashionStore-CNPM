@@ -1,0 +1,58 @@
+﻿@model FashionStore.Models.Product
+
+
+
+<div class="swiper-slide">
+    <div class="product-card image-zoom-effect link-effect d-flex flex-wrap">
+        <div class="image-holder">
+            <a href="@Url.Action("Details", "Product", new { id = Model.ProductID })">
+                <img style="min-height: 100%"
+                     src="@Url.Content("~/Content/img/products/" + Model.ProductImages.FirstOrDefault(x => x.IsPrimary.Value).ImageUrl)"
+                     alt="product-item" class="product-image img-fluid">
+            </a>
+
+        </div>
+        <div class="cart-concern opacity-100">
+            <h3 class="card-title text-capitalize pt-3 ">
+                <a href="@Url.Action("Details", "Product", new { id = Model.ProductID })">@Model.ProductName</a>
+            </h3>
+            <div class="cart-info">
+
+                <a class="fw-bold" href="@Url.Action("Details", "Product", new { id = Model.ProductID })"
+                   data-after="Xem chi tiết">
+                    <span>@Model.BasePrice.ToString("N0")đ</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@* *@
+@* <article class="col-md-4 mb-5 product-item link-effect"> *@
+@*     <div class="image-holder position-relative"> *@
+@*         $1$ <a style="height: 360px" href="@Url.Action("Details", "Product", new { id = item.ProductID })"> #1# *@
+@*         $1$     $2$<img src="~/Content/images/Index/@(item.ProductImages.FirstOrDefault(img => img.IsPrimary == true) != null ? item.ProductImages.FirstOrDefault(img => img.IsPrimary==true).ImageUrl : null)" alt="categories" class="product-image img-fluid">#2# #1# *@
+@*         $1$     <img  style="object-fit: cover"  #1# *@
+@*         $1$           src="@Url.Content("~/Content/img/products/" + (item.ProductImages.FirstOrDefault(img => img.IsPrimary == true) != null ? item.ProductImages.FirstOrDefault(img => img.IsPrimary == true)?.ImageUrl : null))" #1# *@
+@*         $1$           alt="Ảnh @item.ProductName" class="product-image h-100 w-100"> #1# *@
+@*         $1$ </a> #1# *@
+@*         <a href="@Url.Action("Details", "Product", new { id = Model.ProductID })"> *@
+@*             $1$<img src="~/Content/images/Index/@(item.ProductImages.FirstOrDefault(img => img.IsPrimary == true) != null ? item.ProductImages.FirstOrDefault(img => img.IsPrimary==true).ImageUrl : null)" alt="categories" class="product-image img-fluid">#1# *@
+@*             <img *@
+@*                 src="@Url.Content("~/Content/img/products/" + (Model.ProductImages.FirstOrDefault(img => img.IsPrimary == true) != null ? Model.ProductImages.FirstOrDefault(img => img.IsPrimary == true)?.ImageUrl : null))" *@
+@*                 alt="Ảnh @Model.ProductName" class="product-image img-fluid"> *@
+@*         </a> *@
+@* *@
+@*         <div class="product-content"> *@
+@*             <h3 class="card-title text-capitalize pt-3"> *@
+@*                 <a href="@Url.Action("Details", "Product", new { id = Model.ProductID })">@Model.ProductName</a> *@
+@*             </h3> *@
+@*             <a href="@Url.Action("Details", "Product", new { id = Model.ProductID })" *@
+@*                class="text-decoration-none fw-bold" data-after="Xem chi tiết"> *@
+@*                 <span>@(Model.BasePrice.ToString("N0"))đ</span> *@
+@*             </a> *@
+@*         </div> *@
+@*     </div> *@
+@* </article> *@

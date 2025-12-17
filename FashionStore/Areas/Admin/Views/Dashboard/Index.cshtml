@@ -1,0 +1,201 @@
+﻿
+@{
+    ViewBag.Title = "Dashboard";
+}
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+    <span>Dashboard</span>
+</div>
+
+<!-- Content -->
+<div class="content-area">
+    <div class="mb-6">
+        <h1>Dashboard</h1>
+        <p class="text-muted mt-1">Tổng quan hệ thống Admin Panel</p>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="grid grid-cols-4 mb-6">
+        <div class="card">
+            <div class="card-content">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Tổng sản phẩm</span>
+                    <svg style="width: 24px; height: 24px; color: var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                    </svg>
+                </div>
+                <h2>1,234</h2>
+                <p class="text-muted" style="font-size: 12px;">+12% so với tháng trước</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Tổng đơn hàng</span>
+                    <svg style="width: 24px; height: 24px; color: var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                </div>
+                <h2>856</h2>
+                <p class="text-muted" style="font-size: 12px;">+8% so với tháng trước</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Doanh thu</span>
+                    <svg style="width: 24px; height: 24px; color: var(--warning);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+                <h2>128M₫</h2>
+                <p class="text-muted" style="font-size: 12px;">+15% so với tháng trước</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted">Người dùng</span>
+                    <svg style="width: 24px; height: 24px; color: var(--info);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+                <h2>432</h2>
+                <p class="text-muted" style="font-size: 12px;">+24% so với tháng trước</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="card mb-6">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Đơn hàng gần đây</h3>
+                <a href="@Url.Action("Index", "Order")" class="btn btn-outline btn-sm">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="card-content" style="padding: 0;">
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Sản phẩm</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày đặt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>#ORD-1234</strong></td>
+                            <td>Nguyễn Văn A</td>
+                            <td>iPhone 15 Pro Max</td>
+                            <td>36.980.000₫</td>
+                            <td><span class="badge badge-success">Hoàn thành</span></td>
+                            <td>01/11/2025</td>
+                        </tr>
+                        <tr>
+                            <td><strong>#ORD-1235</strong></td>
+                            <td>Trần Thị B</td>
+                            <td>MacBook Air M2</td>
+                            <td>32.990.000₫</td>
+                            <td><span class="badge badge-info">Đang giao</span></td>
+                            <td>01/11/2025</td>
+                        </tr>
+                        <tr>
+                            <td><strong>#ORD-1236</strong></td>
+                            <td>Lê Văn C</td>
+                            <td>iPad Pro 11"</td>
+                            <td>28.980.000₫</td>
+                            <td><span class="badge badge-primary">Đang xử lý</span></td>
+                            <td>01/11/2025</td>
+                        </tr>
+                        <tr>
+                            <td><strong>#ORD-1237</strong></td>
+                            <td>Phạm Thị D</td>
+                            <td>Apple Watch Ultra 2</td>
+                            <td>24.990.000₫</td>
+                            <td><span class="badge badge-warning">Chờ xác nhận</span></td>
+                            <td>31/10/2025</td>
+                        </tr>
+                        <tr>
+                            <td><strong>#ORD-1238</strong></td>
+                            <td>Hoàng Văn E</td>
+                            <td>AirPods Max</td>
+                            <td>13.990.000₫</td>
+                            <td><span class="badge badge-warning">Chờ xác nhận</span></td>
+                            <td>31/10/2025</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="grid grid-cols-2">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Doanh thu theo tháng</h3>
+            </div>
+            <div class="card-content">
+                <canvas id="salesChart" style="max-height: 300px;"></canvas>
+                <p class="text-muted text-center mt-4">Biểu đồ doanh thu 6 tháng gần đây</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Sản phẩm bán chạy</h3>
+            </div>
+            <div class="card-content">
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="font-weight: 500;">iPhone 15 Pro Max</p>
+                            <p class="text-muted" style="font-size: 12px;">456 sản phẩm</p>
+                        </div>
+                        <span class="badge badge-success">+12%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="font-weight: 500;">MacBook Air M2</p>
+                            <p class="text-muted" style="font-size: 12px;">324 sản ph   m</p>
+                        </div>
+                        <span class="badge badge-success">+8%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="font-weight: 500;">AirPods Pro Gen 2</p>
+                            <p class="text-muted" style="font-size: 12px;">289 sản phẩm</p>
+                        </div>
+                        <span class="badge badge-success">+15%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="font-weight: 500;">iPad Pro 11"</p>
+                            <p class="text-muted" style="font-size: 12px;">234 sản phẩm</p>
+                        </div>
+                        <span class="badge badge-success">+6%</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p style="font-weight: 500;">Apple Watch Ultra 2</p>
+                            <p class="text-muted" style="font-size: 12px;">198 sản phẩm</p>
+                        </div>
+                        <span class="badge badge-success">+10%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

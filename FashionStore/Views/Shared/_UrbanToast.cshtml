@@ -1,0 +1,65 @@
+﻿@* @{ *@
+@*     var toastMessage = TempData["Success"] as string ?? TempData["Error"] as string; *@
+@* } *@
+@* *@
+@* @if (!string.IsNullOrEmpty(TempData["Success"] as string)) *@
+@* { *@
+@*     <div id="urban-toast" class="urban-toast urban-toast-success"> *@
+@*         <div> *@
+@*             <div class="urban-toast__title">Thông báo</div> *@
+@*             <div>@toastMessage</div> *@
+@*         </div> *@
+@*         <span class="urban-toast__close" onclick="hideUrbanToast()">×</span> *@
+@*     </div> *@
+@* } *@
+@* else *@
+@* { *@
+@*     if (!string.IsNullOrEmpty(TempData["Error"] as string)) *@
+@*     { *@
+@*         <div id="urban-toast" class="urban-toast urban-toast-error"> *@
+@*             <div> *@
+@*                 <div class="urban-toast__title">Thông báo lỗi</div> *@
+@*                 <div>@toastMessage</div> *@
+@*             </div> *@
+@*             <span class="urban-toast__close" onclick="hideUrbanToast()">×</span> *@
+@*         </div> *@
+@*     } *@
+@* } *@
+
+@{
+    var successMessage = TempData["Success"] as string;
+    var errorMessage = TempData["Error"] as string;
+    var toastMessage = successMessage ?? errorMessage;
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div id="urban-toast" class="urban-toast urban-toast-success">
+        <div>
+            <div class="urban-toast__title">Thông báo</div>
+            <div>@toastMessage</div>
+        </div>
+        <span class="urban-toast__close" onclick="hideUrbanToast()">×</span>
+    </div>
+}
+else if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div id="urban-toast" class="urban-toast urban-toast-error">
+        <div>
+            <div class="urban-toast__title">Thông báo lỗi</div>
+            <div>@toastMessage</div>
+        </div>
+        <span class="urban-toast__close" onclick="hideUrbanToast()">×</span>
+    </div>
+}
+
+
+<script>
+    function hideUrbanToast() {
+        var el = document.getElementById('urban-toast');
+        if (el) el.style.display = 'none';
+    }
+
+    // Auto hide sau 4s
+    setTimeout(hideUrbanToast, 4000);
+</script>

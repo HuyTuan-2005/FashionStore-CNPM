@@ -1,0 +1,272 @@
+﻿@model IEnumerable<FashionStore.Models.Order>
+@{
+  ViewBag.Title = "Quản lý Đơn hàng";
+}
+
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="@Url.Action("Index", "Order")">Dashboard</a>
+  <span class="breadcrumb-separator">/</span>
+  <span>Đơn hàng</span>
+</div>
+
+<!-- Content -->
+<div class="content-area">
+  <div class="d-flex justify-content-between align-items-center mb-6">
+    <div>
+      <h1>Quản lý Đơn hàng</h1>
+      <p class="text-muted mt-1">Danh sách tất cả đơn hàng trong hệ thống</p>
+    </div>
+    <button class="btn btn-outline" onclick="exportToExcel()">
+      <svg style="width: 16px; height: 16px; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+      Xuất Excel
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card mb-6">
+    <div class="card-header">
+      <h3 class="card-title">Tìm kiếm & Lọc</h3>
+    </div>
+    <div class="card-content">
+      @using (Html.BeginForm("Index", "Order", FormMethod.Get, new { @id = "filterForm", @class = "grid grid-cols-3" }))
+      {
+        @Html.TextBox("search", "", new { @id = "searchInput", @class = "form-control", @placeholder = "Tìm theo mã đơn... vd: 123", type = "search" })
+        @* <input type="search" id="searchInput" class="form-control" placeholder="Tìm theo mã đơn... vd: 123"> *@
+
+
+        @Html.DropDownList("status", new SelectList(ViewBag.Status, "StatusValue", "StatusName"), "Tất cả trạng thái", new { @class = "form-control", @id = "statusFilter", data_filter = "" })
+        @* <select class="form-control" data-filter id="statusFilter"> *@
+        @*   <option value="all">Tất cả trạng thái</option> *@
+        @*   <option value="Chờ xác nhận">Chờ xác nhận</option> *@
+        @*   <option value="Đã xác nhận">Đã xác nhận</option> *@
+        @*   <option value="Đang xử lý">Đang xử lý</option> *@
+        @*   <option value="Đang giao">Đang giao</option> *@
+        @*   <option value="Hoàn thành">Hoàn thành</option> *@
+        @*   <option value="Đã hủy">Đã hủy</option> *@
+        @* </select> *@
+
+        @Html.TextBox("fromDate", "", new { @type = "date", @class = "form-control", @placeholder = "Từ ngày", data_filter = "" })
+        @* <input type="date" class="form-control" placeholder="Từ ngày"> *@
+      }
+      <button class="btn btn-primary btn-sm mt-3" onclick="submitFilters()">Lọc</button>
+      <button class="btn btn-outline btn-sm mt-3" onclick="clearFilters()">Xóa bộ lọc</button>
+    </div>
+  </div>
+
+  <!-- Statistics -->
+  <div class="grid grid-cols-3 mb-6" style="grid-template-columns: repeat(5, 1fr);">
+    <div class="card">
+      <div class="card-content" style="text-align: center;">
+        <h2>@Model.Count(x => x.Status.Equals("Pending"))</h2>
+        <p class="text-muted" style="font-size: 12px; margin-top: 0.5rem;">Chờ xác nhận</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-content" style="text-align: center;">
+        <h2>@Model.Count(x => x.Status == "Processing")</h2>
+        <p class="text-muted" style="font-size: 12px; margin-top: 0.5rem;">Đang xử lý</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-content" style="text-align: center;">
+        <h2>@Model.Count(x => x.Status == "Shipped")</h2>
+        <p class="text-muted" style="font-size: 12px; margin-top: 0.5rem;">Đang giao</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-content" style="text-align: center;">
+        <h2>@Model.Count(x => x.Status == "Completed")</h2>
+        <p class="text-muted" style="font-size: 12px; margin-top: 0.5rem;">Hoàn thành</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-content" style="text-align: center;">
+        <h2>@Model.Count(x => x.Status == "Cancelled")</h2>
+        <p class="text-muted" style="font-size: 12px; margin-top: 0.5rem;">Đã hủy</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Actions Bar -->
+  <div id="bulkActionsBar" class="card mb-6 hidden" style="background-color: var(--accent);">
+    <div class="card-content">
+      <div class="d-flex align-items-center gap-3" style="flex-wrap: wrap;">
+        <span><strong><span id="selectedCount">0</span></strong> đơn hàng đã chọn</span>
+        <span class="text-muted">Đổi trạng thái sang:</span>
+        <button class="btn btn-warning btn-sm" onclick="bulkUpdateStatus('Pending')">Chờ xác nhận</button>
+        <button class="btn btn-primary btn-sm" onclick="bulkUpdateStatus('Processing')">Đang xử lý</button>
+        <button class="btn btn-info btn-sm" onclick="bulkUpdateStatus('Shipped')">Đang giao</button>
+        <button class="btn btn-success btn-sm" onclick="bulkUpdateStatus('Completed')">Hoàn thành</button>
+        <button class="btn btn-danger btn-sm" onclick="bulkUpdateStatus('Cancelled')">Hủy đơn</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Orders Table -->
+  <div class="card">
+    <div class="card-content" style="padding: 0;">
+      <div class="table-container">
+        <table class="table" id="dataTable">
+          <thead>
+          <tr>
+            <th style="width: 40px;">
+              <input type="checkbox" id="selectAll" class="checkbox">
+            </th>
+            <th>Mã đơn</th>
+            <th>Khách hàng</th>
+            <th>Sản phẩm</th>
+            <th>Tổng tiền</th>
+            <th>Trạng thái</th>
+            <th>Ngày đặt</th>
+            <th style="width: 150px;">Hành động</th>
+          </tr>
+          </thead>
+          <tbody>
+          @if (Model.Count() == 0)
+          {
+            <tr>
+              <td colspan="8" class="text-center">
+                <div>Không tìm thấy đơn hàng nào.</div>
+              </td>
+            </tr>
+          }
+          else
+          {
+            foreach (var i in Model)
+            {
+              var totalAmount = i.TotalAmount;
+              var shippingFee = 0;
+              var discount = i.OrderDetails.Sum(x => (x.Price - (1-x.DiscountPercent/100) * x.Price) * x.Quantity);
+
+              var total = totalAmount + shippingFee;
+              <tr>
+                <td>
+                  <input data-id="@i.OrderID" btn-checkbox type="checkbox"
+                         class="checkbox row-checkbox">
+                </td>
+                <td><strong>#@i.OrderID</strong></td>
+                <td>
+                  <div>
+                    <strong>@i.Customer.CustomerProfile.FullName</strong>
+                    <p class="text-muted" style="font-size: 12px;">@i.Customer.Email</p>
+                  </div>
+                </td>
+                <td>
+                  <div class="w-100 text-truncate flex-nowrap" style="max-width: 200px;">
+                    @string.Join(", ", i.OrderDetails.Select(od => od.ProductVariant.Product.ProductName).Take(2))
+                    <p class="text-muted" style="font-size: 12px;">@i.OrderDetails.Count sản phẩm</p>
+                  </div>
+                </td>
+                <td>
+                  <strong>@total.ToString("N0") ₫</strong>
+                </td>
+                <td>
+                  @switch (i.Status)
+                  {
+                    case "Completed":
+                      <span class="badge badge-success">Hoàn thành</span>
+                      break;
+                    case "Shipped":
+                      <span class="badge badge-info">Đang giao</span>
+                      break;
+                    case "Processing":
+                      <span class="badge badge-primary">Đang xử lý</span>
+                      break;
+                    case "Pending":
+                      <span class="badge badge-warning">Chờ xác nhận</span>
+                      break;
+                    case "Cancelled":
+                      <span class="badge badge-danger">Đã hủy</span>
+                      break;
+                    default:
+                      <span class="badge badge-secondary">Không xác định</span>
+                      break;
+                  }
+                </td>
+
+                <td>@i.OrderDate.Value.ToShortDateString()</td>
+                <td>
+                  <div class="d-flex gap-2">
+                    <a href="@Url.Action("Details", "Order", new { id = i.OrderID })"
+                       class="btn btn-outline btn-sm">Xem</a>
+                    <button class="btn btn-outline btn-sm" onclick="openModal(@i.OrderID ,'statusModal')">Đổi TT
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  @{
+    Html.RenderPartial("Partial/_Pagination", new ViewDataDictionary
+    {
+      { "currentPage", ViewBag.CurrentPage },
+      { "totalPages", ViewBag.TotalPages }
+    });
+  }
+</div>
+
+<!-- Status Update Modal -->
+<div id="statusModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Cập nhật trạng thái đơn hàng</h3>
+      <button class="btn btn-icon" onclick="closeModal('statusModal')"
+              style="background: none; border: none; font-size: 24px;">×
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Trạng thái mới</label>
+        @Html.DropDownList("status", new SelectList(ViewBag.Status, "StatusValue", "StatusName"), new { @class = "form-control", id = "newStatus" })
+
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ghi chú (Tùy chọn)</label>
+        <textarea disabled="" class="form-control" placeholder="Nhập ghi chú về thay đổi trạng thái..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('statusModal')">Hủy</button>
+      <button class="btn btn-primary"
+              onclick="updateStatus($('#statusModal').data('id') ,$('#newStatus').val()); closeModal('statusModal');">
+        Cập nhật
+      </button>
+    </div>
+  </div>
+</div>
+
+@section forms
+{
+  @using (Html.BeginForm("EditStatus", "Order", FormMethod.Post, new { @class = "display-none", id = "form-change-status" }))
+  {
+    @Html.AntiForgeryToken()
+    @Html.Hidden("status")
+    @Html.Hidden("id")
+  }
+}
+
+@section scripts
+{
+  <script src="~/Content/js/Admin/order-admin.js"></script>
+  <script>
+    setActiveNav('orders');
+    setupSearch('searchInput', 'dataTable');
+    setupFilter('statusFilter', 'dataTable', 5);
+  </script>
+
+
+}

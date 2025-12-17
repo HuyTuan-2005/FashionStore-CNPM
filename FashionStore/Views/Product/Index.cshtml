@@ -1,0 +1,176 @@
+﻿@model IEnumerable<FashionStore.Models.Product>
+
+@{
+    ViewBag.Title = "Sản phẩm";
+}
+<section class="product-grid py-5">
+    <div class="container">
+        <div class="row flex-row-reverse g-md-5">
+            <main class="col-md-9 col-sm-12">
+                <div class="filter-shop d-flex justify-content-between">
+                    @if (@Model.Count() > 0)
+                    {
+                        <div class="showing-product">
+                            <p>Hiển thị 1–@Model.Count() trong số @ViewBag.TotalPrd sản phẩm</p>
+
+                        </div>
+
+                        <div class="sort-by pb-3">
+                            <form action="@Url.Action("Index", "Product")" method="get">
+
+                                <input type="hidden" name="catID" value="@ViewBag.CatID"/>
+                                <input type="hidden" name="kw" value="@ViewBag.Kw"/>
+                                <select name="sort" class="form-control bg-transparent" onchange="this.form.submit()">
+
+                                    <option value="0" @(ViewBag.Sort == 0 ? "selected" : "")>Mặc định</option>
+
+                                    <option value="1" @(ViewBag.Sort == 1 ? "selected" : "")>Tên (A - Z)</option>
+
+                                    <option value="2" @(ViewBag.Sort == 2 ? "selected" : "")>Tên (Z - A)</option>
+
+                                    <option value="3" @(ViewBag.Sort == 3 ? "selected" : "")>Giá (Thấp - Cao)</option>
+
+                                    <option value="4" @(ViewBag.Sort == 4 ? "selected" : "")>Giá (Cao - Thấp)</option>
+
+                                </select>
+                            </form>
+                        </div>
+                    }
+                </div>
+
+                <div class="row">
+                    @if (@Model.Count() <= 0)
+                    {
+                        <p class="text-center">Không tìm thấy sản phẩm nào</p>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        
+                        <article class="col-md-4 mb-5 product-item link-effect">
+                            @Html.Partial("_Product", item)
+                        </article>
+
+                    }
+                </div>
+
+                @{
+                    int currentPage = ViewBag.CurrentPage ?? 1; // Nếu null thì mặc định là 1
+                    int totalPages = ViewBag.TotalPages ?? 1; // Nếu null thì mặc định là 1
+                }
+
+                @if (Model.Count() > 0)
+                {
+                    <nav aria-label="Page navigation" class="d-flex justify-content-center mt-5">
+                        <ul class="pagination">
+
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@(currentPage > 1 ? Url.Action("Index", "Product", new { page = currentPage - 1 }) : "#")"
+                                   aria-label="Previous">
+                                    <svg class="arrow-left" width="18" height="20">
+                                        <use xlink:href="#arrow-left"></use>
+                                    </svg>
+                                </a>
+                            </li>
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                <li class="page-item @(currentPage == i ? "active" : "")" aria-current="page">
+                                    <a class="page-link"
+                                       href="@Url.Action("Index", "Product", new { kw = ViewBag.Kw, page = i })">
+                                        @i
+                                    </a>
+                                </li>
+                            }
+                            <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@(currentPage < totalPages ? Url.Action("Index", "Product", new { kw = ViewBag.Kw, page = currentPage + 1 }) : "#")"
+                                   aria-label="Next">
+                                    <svg class="arrow-right" width="18" height="20">
+                                        <use xlink:href="#arrow-right"></use>
+                                    </svg>
+                                </a>
+                            </li>
+
+                        </ul>
+                    </nav>
+                }
+
+            </main>
+
+            <aside class="col-md-3 col-sm-12 mt-5">
+                <div class="sidebar">
+                    <div class="widget-menu">
+                        <div class="widget-search-bar">
+                            <form action="@Url.Action("Index", "Product", new { kw = "kw" })" method="get">
+                                @Html.TextBox("kw", "", new
+                                {
+                                    @class = "form-control search-field ps-3 bg-transparent", placeholder = "Tìm kiếm...",
+                                    type = "search"
+                                })
+                            </form>
+                        </div>
+                    </div>
+                    <div class="widget-product-categories mt-3">
+                        @foreach (var item in ViewBag.DM)
+                        {
+                            <h5 class="widget-title">
+                                <a class="cat-parent-link collapsed text-decoration-underline"
+                                   data-bs-toggle="collapse"
+                                   href="#catCollapse_@item.GroupID"
+                                   role="button"
+                                   aria-expanded="false"
+                                   aria-controls="catCollapse_@item.GroupID">
+                                    @item.GroupName
+                                    <span class="cat-icon">▼</span>
+                                </a>
+                            </h5>
+
+                            <ul class="list-unstyled collapse cat-sub-list" id="catCollapse_@item.GroupID">
+                                @foreach (var sub in item.Categories)
+                                {
+                                    <li class="cat-sub-item">
+                                        <a href="@Url.Action("Index", "Product", new { catId = sub.CategoryID })">
+                                            @sub.CategoryName
+                                        </a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                    <div class="widget-product-categories mt-3">
+                        <h5 class="widget-title">
+                            <a class="cat-parent-link @(ViewBag.Price != null && ViewBag.Price != 0 ? "" : "collapsed") text-decoration-underline"
+                               data-bs-toggle="collapse"
+                               href="#priceCollapse"
+                               role="button"
+                               aria-expanded="@(ViewBag.Price != null && ViewBag.Price != 0 ? "true" : "false")"
+                               aria-controls="priceCollapse">
+                                Lọc theo giá
+                                <span class="cat-icon">▼</span>
+                            </a>
+                        </h5>
+                        <ul class="list-unstyled collapse cat-sub-list @(ViewBag.Price != null && ViewBag.Price != 0 ? "show" : "")"
+                            id="priceCollapse">
+                            <li class="tags-item">
+                                <a href="@Url.Action("Index", new { price = 0, page = 1, sort = ViewBag.Sort, catID = ViewBag.CatID, kw = ViewBag.Kw })">Tất
+                                    cả</a>
+                            </li>
+                            <li class="tags-item">
+                                <a href="@Url.Action("Index", new { price = 1, page = 1, sort = ViewBag.Sort, catID = ViewBag.CatID, kw = ViewBag.Kw })">0-300k</a>
+                            </li>
+                            <li class="tags-item">
+                                <a href="@Url.Action("Index", new { price = 2, page = 1, sort = ViewBag.Sort, catID = ViewBag.CatID, kw = ViewBag.Kw })">300k-500k</a>
+                            </li>
+                            <li class="tags-item">
+                                <a href="@Url.Action("Index", new { price = 3, page = 1, sort = ViewBag.Sort, catID = ViewBag.CatID, kw = ViewBag.Kw })">500k-1000k</a>
+                            </li>
+                            <li class="tags-item">
+                                <a href="@Url.Action("Index", new { price = 4, page = 1, sort = ViewBag.Sort, catID = ViewBag.CatID, kw = ViewBag.Kw })">>1000k</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>

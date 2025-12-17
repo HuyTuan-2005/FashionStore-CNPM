@@ -1,0 +1,362 @@
+﻿@model FashionStore.ViewModels.ProductDetailsViewModel
+@{
+    ViewBag.Title = Model.Product.ProductName;
+    var product = Model.Product;
+    var relatedProducts = Model.RelatedProducts;
+}
+
+<section id="product-detail" class="single-product no-padding-top"
+         style="height: calc(100vh - 100px); padding-bottom: 100px; overflow: hidden">
+    <div class="container">
+        <div class="row g-5 py-1">
+            <div class="col-md-7">
+                <div class="row h-100">
+                    <div class="col-md-3 d-none d-md-block pb-2">
+                        <div>
+                            <div style="overflow-y: auto; max-height: calc(100vh);">
+                                @foreach (var i in product.ProductImages)
+                                {
+                                    if (i.IsPrimary.Value)
+                                    {
+                                        continue;
+                                    }
+
+                                    <div class="pb-2">
+                                        <img src="@Url.Content("~/Content/img/products/" + i.ImageUrl)" alt="image"
+                                             class="thumb-image img-fluid">
+                                    </div>
+                                }
+                                @* <div class="swiper-slide swiper-slide-thumb-active swiper-slide-prev" role="group" aria-label="1 / 4" style="height: 250px; margin-bottom: 20px;"> *@
+                                @*   <img src="images/product-thumbnail-1.jpg" alt="image" class="thumb-image img-fluid"> *@
+                                @* </div> *@
+                                @* <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-active" role="group" aria-label="2 / 4" style="height: 250px; margin-bottom: 20px;"> *@
+                                @*   <img src="images/product-thumbnail-2.jpg" alt="image" class="thumb-image img-fluid"> *@
+                                @* </div> *@
+                                @* <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-next" role="group" aria-label="3 / 4" style="height: 250px; margin-bottom: 20px;"> *@
+                                @*   <img src="images/product-thumbnail-3.jpg" alt="image" class="thumb-image img-fluid"> *@
+                                @* </div> *@
+                                @* <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible" role="group" aria-label="4 / 4" style="height: 250px; margin-bottom: 20px;"> *@
+                                @*   <img src="images/product-thumbnail-4.jpg" alt="image" class="thumb-image img-fluid"> *@
+                                @* </div> *@
+                            </div>
+                            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+                    </div>
+                    <div class="col-md-9">
+                        <div>
+                            <div>
+                                <div>
+                                    <img
+                                        src="@Url.Content("/Content/img/products/" + @product.ProductImages.FirstOrDefault(x => x.IsPrimary.Value).ImageUrl)"
+                                        alt="product-large" class="img-fluid">
+                                </div>
+                                @* <div class="swiper-slide swiper-slide-next" role="group" aria-label="2 / 4" style="width: 467px; opacity: 0; transform: translate3d(-467px, 0px, 0px); transition-duration: 0ms;"> *@
+                                @*   <img src="@Url.Content("/Content/img/products/product-item1.jpg")" alt="product-large" class="img-fluid"> *@
+                                @* </div> *@
+                                @* <div class="swiper-slide" role="group" aria-label="3 / 4" style="width: 467px; opacity: 0; transform: translate3d(-934px, 0px, 0px); transition-duration: 0ms;"> *@
+                                @*   <img src="images/product-large-3.jpg" alt="product-large" class="img-fluid"> *@
+                                @* </div> *@
+                                @* <div class="swiper-slide" role="group" aria-label="4 / 4" style="width: 467px; opacity: 0; transform: translate3d(-1401px, 0px, 0px); transition-duration: 0ms;"> *@
+                                @*   <img src="images/product-large-4.jpg" alt="product-large" class="img-fluid"> *@
+                                @* </div> *@
+                            </div>
+                            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                
+                <div class="mb-3">
+                    <a href="@Url.Action("Index", "Product")" class="">
+                        <i class="bi bi-arrow-left me-2"></i>Quay lại
+                    </a>
+                </div>
+                <div class="product-info" style="font-size: 14px">
+                    <!-- Tiêu đề sản phẩm -->
+                    <h1 class="product-title text-uppercase"
+                        style="padding: 0;margin:0;font-size: 1.8rem; letter-spacing: 1px;">
+                        @product.ProductName
+                    </h1>
+
+                    @* <div> *@
+                    @*     @if (Model.IsActive.Value) *@
+                    @*     { *@
+                    @*         <span class="badge bg-success px-3 py-2"> *@
+                    @*             <i class="bi bi-check-circle me-1"></i>@Model.ProductVariants.Sum(x => x.Stock) Còn hàng *@
+                    @*         </span> *@
+                    @*     } *@
+                    @*     else *@
+                    @*     { *@
+                    @*         <span class="badge bg-danger px-3 py-2"> *@
+                    @*             <i class="bi bi-check-circle me-1"></i>Hết hàng *@
+                    @*         </span> *@
+                    @*     } *@
+                    @* </div> *@
+
+                    <!-- Giá sản phẩm -->
+                    <div class="product-price ">
+                        <span class="fs-2">@product.BasePrice.ToString("N0")đ</span>
+                        @* <del>$64.00</del> *@
+                    </div>
+
+
+                    <!-- Mô tả -->
+                    <p class="text-muted mb-4 lh-lg">
+                        @product.Description
+                    </p>
+                    <!-- Product Details -->
+                    <div class="border rounded p-3 bg-light">
+                        <div class="row g-3 small">
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-upc-scan text-primary fs-5 me-2"></i>
+                                    <div>
+                                        <div class="text-muted">Trạng thái</div>
+                                        @if (product.IsActive.Value)
+                                        {
+                                            <strong>Còn hàng</strong>
+                                        }
+                                        else
+                                        {
+                                            <strong class="text-danger">Hết hàng</strong>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-tag text-primary fs-5 me-2"></i>
+                                    <div>
+                                        <div class="text-muted">Danh mục</div>
+                                        <strong>@product.Category.CategoryName</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-truck text-primary fs-5 me-2"></i>
+                                    <div>
+                                        <div class="text-muted">Giao hàng</div>
+                                        <strong>2-3 ngày</strong>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-arrow-repeat text-primary fs-5 me-2"></i>
+                                    <div>
+                                        <div class="text-muted">Đổi trả</div>
+                                        <strong>30 ngày</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="mt-3">
+                        <span class="text-muted small me-2">Tags:</span>
+                        <a href="#"
+                           class="badge text-bg-secondary text-decoration-none me-1">@product.Category.CategoryGroup.GroupName</a>
+                        <a href="#"
+                           class="badge text-bg-secondary text-decoration-none me-1">@product.Category.CategoryName</a>
+                    </div>
+
+                    <hr class="my-4">
+
+                    @if (product.IsActive.Value)
+                    {
+                        using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("ProductID", product.ProductID)
+                            <div class="row">
+                                
+                                <!-- Chọn Màu-->
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label fw-bold mb-2">Màu sắc:</label>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        @Html.DropDownList("ColorId", new SelectList(product.ProductVariants.Select(v => v.Color).Distinct(), "ColorID", "ColorName"), "Chọn màu sắc", new {@class="form-control", required="required"})
+                                        @* <select class="form-control" name="ColorId"> *@
+                                        @*     @foreach (var i in ) *@
+                                        @*     { *@
+                                        @*         <option value="@i.ColorID">@i.ColorName</option> *@
+                                        @*     } *@
+                                        @* </select> *@
+                                    </div>
+                                </div>
+                                <!-- Chọn Size -->
+                                <div class="mb-3 col-md-6">
+                                    <label class="form-label fw-bold mb-2">Chọn kích thước:</label>
+                                    <div class="btn-group w-100" role="group">
+                                        @Html.DropDownList("SizeId", new SelectList(product.ProductVariants.Select(v => v.Size).Distinct(), "SizeID", "SizeName"), "Chọn size", new {@class="form-control", required="required"})
+                                        @* <select class="form-control" name="SizeId"> *@
+                                        @*     @foreach (var i in product.ProductVariants.Select(v => v.Size).Distinct()) *@
+                                        @*     { *@
+                                        @*         <option value="@i.SizeID">@i.SizeName</option> *@
+                                        @*     } *@
+                                        @* </select> *@
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-4">
+
+                                <!-- Số lượng -->
+                                <!-- Rating & Stock -->
+                                <label class="form-label fw-bold">Số lượng:</label>
+                                <div>
+                                    <div class="input-group ">
+                                        <input type="number" id="quantity" name="Quantity"
+                                               class="form-control text-center fw-bold"
+                                               value="1" min="1" max="100">
+                                    </div>
+                                </div>
+
+                                <!-- Thêm vào giỏ hàng -->
+                                <button type="submit" class="btn btn-black btn-rounded-none fw-bold flex-grow-1 ">
+                                    <i class="bi bi-plus-lg me-2"></i>Thêm vào giỏ
+                                </button>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <button disabled="" type="button"
+                                class="btn btn-black btn-rounded-none fw-bold flex-grow-1 w-100 ">
+                            <i class="bi bi-lightning-charge me-2"></i> Hết hàng
+                        </button>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@if (relatedProducts.Count > 0)
+{
+    
+<!-- Section Sản phẩm liên quan -->
+<section id="featured-products" class="product-store position-relative py-5 ">
+  <div class="container">
+    <div class="row">
+      <div class="display-header pb-3 d-md-flex justify-content-between align-items-center flex-wrap col-md-12">
+        <h2 class="display-2 text-dark text-capitalize fs-3">Sản phẩm liên quan</h2>
+        <a href="@Url.Action("Index", "Product")" class="btn btn-arrow outline-dark position-relative">
+                <span class="text-capitalize pe-1">Xem tất cả</span>
+                <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+    <div class="row">
+      <div id="featured-swiper" class="product-swiper col-md-12">
+        <div class="swiper">
+          <div class="swiper-wrapper">
+            @foreach (var item in relatedProducts)
+            {
+              @Html.Partial("_Product", item)
+              @* <div class="swiper-slide"> *@
+              @*   <div class="product-card image-zoom-effect link-effect d-flex flex-wrap"> *@
+              @*     <div class="image-holder"> *@
+              @*       <a href="@Url.Action("Details", "Product", new { id = i.ProductID })"> *@
+              @*         <img  style="min-height: 100%"  src="@Url.Content("~/Content/img/products/" + i.ProductImages.FirstOrDefault(x => x.IsPrimary.Value).ImageUrl)" alt="product-item" class="product-image img-fluid"> *@
+              @*       </a> *@
+              @*        *@
+              @*     </div> *@
+              @*     <div class="cart-concern"> *@
+              @*       <h3 class="card-title text-capitalize pt-3 "> *@
+              @*         <a href="@Url.Action("Details", "Product", new{id = i.ProductID})">@i.ProductName</a> *@
+              @*       </h3> *@
+              @*       <div class="cart-info"> *@
+              @*          *@
+              @*         <a class="fw-bold" href="@Url.Action("Details", "Product", new{id = i.ProductID})" data-after="Xem chi tiết"> *@
+              @*           <span>@i.BasePrice.ToString("N0")đ</span> *@
+              @*         </a> *@
+              @*       </div> *@
+              @*     </div> *@
+              @*   </div> *@
+              @* </div> *@
+            }
+          </div>
+        </div>
+        <div class="swiper-pagination text-center mt-5"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+}
+@* *@
+@* <section class="py-5"> *@
+@*     <div class="container"> *@
+@*         <div class="row"> *@
+@* *@
+@*             <!-- Hình ảnh sản phẩm --> *@
+@*             <div class="col-md-6"> *@
+@*                 <img class="img-fluid rounded mb-3" *@
+@*                      src="@Url.Content("~/Content/img/products/" + (Model.ProductImages.FirstOrDefault(i => i.IsPrimary == true)?.ImageUrl ?? "product-item1.jpg"))" /> *@
+@* *@
+@*                 <div class="d-flex mt-3"> *@
+@*                     @foreach (var img in Model.ProductImages) *@
+@*                     { *@
+@*                         <img src="@Url.Content("~/Content/img/products/" + img.ImageUrl)" *@
+@*                              class="img-thumbnail me-2" *@
+@*                              style="width: 80px; height: 80px; object-fit: cover;" /> *@
+@*                     } *@
+@*                 </div> *@
+@*             </div> *@
+@* *@
+@*             <!-- Thông tin sản phẩm --> *@
+@*             <div class="col-md-6"> *@
+@*                 <h2 class="fw-bold">@Model.ProductName</h2> *@
+@* *@
+@*                 <h4 class="text-danger fw-bold">@Model.BasePrice.ToString("N0") đ</h4> *@
+@* *@
+@*                 <p class="mt-3"> *@
+@*                     @Html.Raw(Model.Description) *@
+@*                 </p> *@
+@* *@
+@*                 @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post)) *@
+@*                 { *@
+@*                     <input type="hidden" name="productId" value="@Model.ProductID" /> *@
+@* *@
+@*                     <!-- Chọn màu --> *@
+@*                     <div class="mt-4"> *@
+@*                         <label class="fw-bold">Màu sắc:</label> *@
+@*                         <select class="form-control w-50 mt-1" name="color"> *@
+@*                             @foreach (var variant in Model.ProductVariants.Select(v => v.Color).Distinct()) *@
+@*                             { *@
+@*                                 <option value="@variant.ColorName">@variant.ColorName</option> *@
+@*                             } *@
+@*                         </select> *@
+@*                     </div> *@
+@* *@
+@*                     <!-- Chọn size --> *@
+@*                     <div class="mt-3"> *@
+@*                         <label class="fw-bold">Size:</label> *@
+@*                         <select class="form-control w-50 mt-1" name="size"> *@
+@*                             @foreach (var sz in Model.ProductVariants.Select(v => v.Size).Distinct()) *@
+@*                             { *@
+@*                                 <option value="@sz.SizeName">@sz.SizeName</option> *@
+@*                             } *@
+@*                         </select> *@
+@*                     </div> *@
+@* *@
+@*                     <!-- Số lượng --> *@
+@*                     <div class="mt-3"> *@
+@*                         <label class="fw-bold">Số lượng:</label> *@
+@*                         <input type="number" name="quantity" value="1" class="form-control w-25 mt-1" min="1" /> *@
+@*                     </div> *@
+@* *@
+@*                     <!-- Nút --> *@
+@*                     <div class="mt-4"> *@
+@*                         <button class="btn btn-dark btn-lg px-5"> *@
+@*                             Thêm vào giỏ *@
+@*                         </button> *@
+@*                     </div> *@
+@*                 } *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </section> *@
