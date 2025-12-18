@@ -52,6 +52,7 @@
           <Property Name="Email" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="IsActive" Type="bit" />
           <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="isAdmin" Type="bit" />
         </EntityType>
         <EntityType Name="OrderDetails">
           <Key>
@@ -358,6 +359,7 @@
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
           <NavigationProperty Name="CustomerProfile" Relationship="Self.FK__CustomerP__Profi__797309D9" FromRole="Customers" ToRole="CustomerProfile" />
           <NavigationProperty Name="Orders" Relationship="Self.FK__Orders__Customer__1BC821DD" FromRole="Customers" ToRole="Orders" />
+          <Property Name="isAdmin" Type="Boolean" />
         </EntityType>
         <EntityType Name="OrderDetail">
           <Key>
@@ -669,6 +671,7 @@
           <EntitySetMapping Name="Customers">
             <EntityTypeMapping TypeName="FashionStoreModel.Customer">
               <MappingFragment StoreEntitySet="Customers">
+                <ScalarProperty Name="isAdmin" ColumnName="isAdmin" />
                 <ScalarProperty Name="CustomerID" ColumnName="CustomerID" />
                 <ScalarProperty Name="UserName" ColumnName="UserName" />
                 <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />

@@ -96,6 +96,12 @@ namespace FashionStore.Controllers
                     (us.UserName == cus.UserName || us.Email == cus.UserName));
                 if (cust != null && PasswordHasher.VerifyPassword(cus.PasswordHash, cust.PasswordHash))
                 {
+                    if (cust.isAdmin == true)
+                    {
+                        Session["Admin"] = cust.UserName;
+                        ViewBag.Admin = cust.UserName;
+                        return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+                    }
                     Session["Customer"] = cust;
                     TempData["Success"] = $"Đăng nhập thành công.";
 
