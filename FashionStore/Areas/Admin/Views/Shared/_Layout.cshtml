@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="~/Content/css/admin/dashboard.css">
 
-    @RenderSection("styles", required: false)
+    @RenderSection("styles", required: false) 
 
 </head>
 <body>
@@ -85,7 +85,9 @@
                 </svg>
             </button>
             <div class="d-flex align-items-center gap-3">
-                <span>@ViewBag.Admin</span>
+                <span>@(HttpContext.Current.Session["Customer"] as string )</span>
+                @*<span>@ViewBag.Customer</span>*@
+
             </div>
         </header>
 

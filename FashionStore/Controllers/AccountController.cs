@@ -98,8 +98,8 @@ namespace FashionStore.Controllers
                 {
                     if (cust.isAdmin == true)
                     {
-                        Session["Admin"] = cust.UserName;
-                        ViewBag.Admin = cust.UserName;
+                        Session["Customer"] = cust.UserName;
+                        ViewBag.Customer = cust.UserName;
                         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                     }
                     Session["Customer"] = cust;
