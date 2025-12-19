@@ -102,7 +102,8 @@ namespace FashionStore.Controllers
                         return View("Login");
                     }
 
-                    Session["Customer"] = cust.UserName;
+                    Session["CustomerUserName"] = cust.UserName;
+                    Session["Customer"] = cust;
 
                     if (cust.RoleID == 1 || cust.RoleID == 2)
                     {
