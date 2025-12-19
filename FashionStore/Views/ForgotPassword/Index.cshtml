@@ -27,12 +27,13 @@
 
         <!-- STEP 1 -->
         <div id="step-phone">
-            <div class="step-title">Bước 1: Nhập số điện thoại</div>
+            <div class="step-title">Bước 1: Nhập email</div>
             <div class="form-group mb-3">
-                <input type="text"
-                       id="phone"
+                <input type="email"
+                       id="email"
                        class="form-control"
-                       placeholder="Số điện thoại đã đăng ký" />
+                       placeholder="Email đã đăng ký" />
+
             </div>
             <button class="btn btn-primary w-100" onclick="sendOTP()">
                 Gửi mã OTP
@@ -80,10 +81,10 @@
     <script>
         function sendOTP() {
             $.post("/ForgotPassword/SendOTP", {
-                phone: $("#phone").val()
+                email: $("#email").val()
             }, function (res) {
                 if (res.success) {
-                    alert("OTP đã được gửi");
+                    alert("OTP đã được gửi qua email");
                     $("#step-phone").hide();
                     $("#step-otp").fadeIn();
                 } else {
@@ -91,7 +92,6 @@
                 }
             });
         }
-
         function verifyOTP() {
             $.post("/ForgotPassword/VerifyOTP", {
                 otp: $("#otp").val()
