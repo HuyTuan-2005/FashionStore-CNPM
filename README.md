@@ -1,5 +1,5 @@
 # FashionStore
-#### Lập trình web nhóm 9
+#### Công nghệ phần mềm nhóm 1
 
 Ứng dụng web bán quần áo xây dựng bằng ASP.NET MVC, cho phép người dùng xem sản phẩm, thêm vào giỏ hàng và đặt hàng online.
 
@@ -40,13 +40,13 @@ Mục tiêu là mô phỏng một website bán quần áo cơ bản với đầy
 
 - .NET SDK phù hợp với version project (ví dụ .NET 6).
 - SQL Server (hoặc SQL Server Express).
-- Visual Studio 2022 / JetBrains Rider.
+- Visual Studio 2022 trở lên/ JetBrains Rider.
 
 ### Các bước
 
 1. Clone repo: 
 ```
-git clone https://github.com/HuyTuan-2005/FashionStore.git
+git clone https://github.com/HuyTuan-2005/FashionStore-CNPM.git
 cd FashionStore
 ```
 
