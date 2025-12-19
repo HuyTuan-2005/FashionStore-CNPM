@@ -96,15 +96,20 @@ namespace FashionStore.Controllers
                     (us.UserName == cus.UserName || us.Email == cus.UserName));
                 if (cust != null && PasswordHasher.VerifyPassword(cus.PasswordHash, cust.PasswordHash))
                 {
-                    if (cust.isAdmin == true)
+                    if (cust.IsActive == false)
                     {
-                        Session["Customer"] = cust.UserName;
-                        ViewBag.Customer = cust.UserName;
+                        ModelState.AddModelError("", "Tài khoản đã bị khoá");
+                        return View("Login");
+                    }
+
+                    Session["Customer"] = cust.UserName;
+
+                    if (cust.RoleID == 1 || cust.RoleID == 2)
+                    {
                         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
                     }
-                    Session["Customer"] = cust;
-                    TempData["Success"] = $"Đăng nhập thành công.";
 
+                    TempData["Success"] = "Đăng nhập thành công";
                     return RedirectToAction("Index", "Product");
                 }
                 else

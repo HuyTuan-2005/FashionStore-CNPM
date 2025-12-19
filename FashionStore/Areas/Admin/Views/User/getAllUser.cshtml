@@ -1,0 +1,111 @@
+﻿@using UserTuple = System.Tuple<int, string, string, int, string, System.DateTime, System.Tuple<bool, string>>
+
+@model List<UserTuple>
+@functions{
+    string RoleBadgeClass(string roleName)
+    {
+        switch (roleName)
+        {
+            case "Quản Trị Viên": return "badge-danger";
+            case "Nhân Viên": return "badge-warning";
+            case "Khách Hàng": return "badge-info";
+            default: return "badge-secondary";
+        }
+    }
+}
+
+<!-- Users Table -->
+<div class="card">
+    <div class="card-content" style="padding: 0;">
+        <div class="table-container">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th style="width: 40px;">
+                            <input type="checkbox" id="selectAll" class="checkbox">
+                        </th>
+                        <th>Người dùng</th>
+                        <th>So dien thoai</th>
+                        <th>Vai trò</th>
+                        <th>Ngày tạo</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var i in Model)
+                    {
+                        <tr>
+                            <td><input type="checkbox" class="checkbox row-checkbox"></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 500;">
+
+                                    </div>
+                                    <div>
+                                        <strong>@i.Item2</strong>
+                                        <p class="text-muted" style="font-size: 12px;">@i.Item3</p>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td>@i.Item7.Item2</td>
+                            <td>
+                                <span class="badge @RoleBadgeClass(i.Item5)"
+                                      style="cursor:pointer"
+                                      onclick="toggleRoleSelect(@i.Item1)">
+                                    @i.Item5
+                                </span>
+
+
+                                <!-- Dropdown đổi role -->
+                                <select id="roleSelect-@i.Item1"
+                                        class="form-control d-none"
+                                        onchange="changeRole(@i.Item1, this.value)">
+                                    @foreach (var r in ViewBag.Roles)
+                                    {
+                                        <option value="@r.RoleID"
+                                                @(r.RoleName == i.Item5 ? "selected" : "")>
+                                            @r.RoleName
+                                        </option>
+                                    }
+                                </select>
+
+                            </td>
+
+                            <td>@i.Item6.ToShortDateString()</td>
+                            <td>
+                                @if (@i.Item7.Item1 == true)
+                                {
+                                    <a href="User/UpdateState?CustomerID=@i.Item1" class="badge badge-success text-decoration-none">Hoạt động</a>
+
+                                }
+                                else
+                                {
+                                    <a href="User/UpdateState?CustomerID=@i.Item1" class="badge badge-danger text-decoration-none">Khoá</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+function toggleRoleSelect(customerId) {
+    const select = document.getElementById("roleSelect-" + customerId);
+    select.classList.toggle("d-none");
+}
+
+function changeRole(customerId, roleId) {
+    window.location.href =
+        '@Url.Action("ChangeRole", "User", new { area = "Admin" })'
+        + '?CustomerID=' + customerId
+        + '&RoleID=' + roleId;
+}
+</script>
+
+

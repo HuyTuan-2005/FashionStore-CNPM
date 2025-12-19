@@ -1,0 +1,241 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+@{
+    var roles = ViewBag.Roles as List<FashionStore.Models.Role>;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Người dùng - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="index.html">Dashboard</a>
+        <span class="breadcrumb-separator">/</span>
+        <span>Người dùng</span>
+    </div>
+
+    <!-- Content -->
+    <div class="content-area">
+        <div class="d-flex justify-content-between align-items-center mb-6">
+            <div>
+                <h1>Quản lý Người dùng</h1>
+                <p class="text-muted mt-1">Danh sách tất cả người dùng trong hệ thống</p>
+            </div>
+            <a href="user-add.html" class="btn btn-primary">
+                <svg style="width: 16px; height: 16px; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Thêm người dùng
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-6">
+            <div class="card-header">
+                <h3 class="card-title">Tìm kiếm & Lọc</h3>
+            </div>
+            <div class="card-content">
+                <form id="filterForm">
+                    <div class="grid grid-cols-3 gap-3">
+                        <!-- Search -->
+                        <input type="text"
+                               name="keyword"
+                               class="form-control"
+                               placeholder="Tìm theo username hoặc email" 
+                               value="@ViewBag.Keyword"
+                               />
+
+                        <!-- Role filter -->
+                        <select name="roleId" class="form-control">
+                            <option value="">Tất cả vai trò</option>
+                            @foreach (var r in roles)
+                            {
+                                <option value="@r.RoleID">@r.RoleName</option>
+                            }
+                        </select>
+
+                        <!-- Status filter -->
+                        <select name="isActive" class="form-control">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="true">Hoạt động</option>
+                            <option value="false">Khoá</option>
+                        </select>
+                    </div>
+
+                    <div class="mt-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="clearFilters()">Xóa bộ lọc</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bulk Actions Bar -->
+        <div id="bulkActionsBar" class="card mb-6 hidden" style="background-color: var(--accent);">
+            <div class="card-content">
+                <div class="d-flex align-items-center gap-4">
+                    <span><strong><span id="selectedCount">0</span></strong> người dùng đã chọn</span>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDelete('bulk', 'các người dùng đã chọn', 'người dùng')">Xóa</button>
+                    <button class="btn btn-secondary btn-sm" onclick="bulkUpdateStatus('inactive')">Vô hiệu hóa</button>
+                    <button class="btn btn-success btn-sm" onclick="bulkUpdateStatus('active')">Kích hoạt</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div id="userTable">
+            @Html.Action("getAllUser")
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+            <a href="#">« Trước</a>
+            <span class="active">1</span>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            <a href="#">...</a>
+            <a href="#">10</a>
+            <a href="#">Sau »</a>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Thêm người dùng mới</h3>
+                <button class="btn btn-icon" onclick="closeModal('addUserModal')" style="background: none; border: none; font-size: 24px;">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Họ tên *</label>
+                        <input type="text" class="form-control" required placeholder="Nhập họ tên">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" required placeholder="email@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại *</label>
+                        <input type="tel" class="form-control" required placeholder="0901234567">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vai trò *</label>
+                        <select class="form-control" required>
+                            <option value="">Chọn vai trò</option>
+                            <option>Admin</option>
+                            <option>Quản lý</option>
+                            <option>Nhân viên</option>
+                            <option>Khách hàng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu *</label>
+                        <input type="password" class="form-control" required placeholder="Nhập mật khẩu">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-control">
+                            <option value="active" selected>Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('addUserModal')">Hủy</button>
+                <button class="btn btn-primary" onclick="if(validateForm('addUserForm')) { closeModal('addUserModal'); showToast('Đã thêm người dùng thành công'); }">Thêm người dùng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Chỉnh sửa người dùng</h3>
+                <button class="btn btn-icon" onclick="closeModal('editUserModal')" style="background: none; border: none; font-size: 24px;">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="editUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Họ tên *</label>
+                        <input type="text" class="form-control" value="Nguyễn Văn A" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-control" value="nguyenvana@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Số điện thoại *</label>
+                        <input type="tel" class="form-control" value="0901234567" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Vai trò *</label>
+                        <select class="form-control" required>
+                            <option>Admin</option>
+                            <option>Quản lý</option>
+                            <option>Nhân viên</option>
+                            <option>Khách hàng</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control" placeholder="Để trống nếu không đổi">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Trạng thái</label>
+                        <select class="form-control">
+                            <option value="active" selected>Hoạt động</option>
+                            <option value="inactive">Không hoạt động</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('editUserModal')">Hủy</button>
+                <button class="btn btn-primary" onclick="if(validateForm('editUserForm')) { closeModal('editUserModal'); showToast('Đã cập nhật người dùng thành công'); }">Cập nhật</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        setActiveNav('users');
+        setupSearch('searchInput', 'dataTable');
+        setupFilter('roleFilter', 'dataTable', 2);
+        setupFilter('statusFilter', 'dataTable', 5);
+        $('#filterForm').submit(function (e) {
+        e.preventDefault();
+
+        $.ajax({
+            url: '@Url.Action("getAllUser", "User", new { area = "Admin" })',
+            type: 'GET',
+            data: $(this).serialize(),
+            success: function (res) {
+                $('#userTable').html(res);
+            }
+        });
+    });
+
+    function clearFilters() {
+        $('#filterForm')[0].reset();
+
+        $.get('@Url.Action("getAllUser", "User", new { area = "Admin" })', function (res) {
+            $('#userTable').html(res);
+        });
+    }
+    </script>
+</body>
+</html>
+
