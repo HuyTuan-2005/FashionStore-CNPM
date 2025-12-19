@@ -5,6 +5,7 @@
 @{
     var roles = ViewBag.Roles as List<FashionStore.Models.Role>;
 }
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -29,13 +30,53 @@
                 <h1>Quản lý Người dùng</h1>
                 <p class="text-muted mt-1">Danh sách tất cả người dùng trong hệ thống</p>
             </div>
-            <a href="user-add.html" class="btn btn-primary">
-                <svg style="width: 16px; height: 16px; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Thêm người dùng
-            </a>
+            <form method="post"
+                  action="/Admin/User/addRole"
+                  class="d-flex align-items-center gap-2 justify-content-center">
+
+                <input type="text"
+                       name="roleName"
+                       class="form-control"
+                       placeholder="Nhập tên vai trò"
+                       style="max-width: 280px;" />
+
+                <button type="submit" class="btn btn-primary d-flex align-items-center gap-1">
+                    <svg width="16" height="16"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Thêm</span>
+                </button>
+            </form>
+
+            <form method="post"
+                  action="/Admin/User/dropRole"
+                  class="d-flex align-items-center gap-2 justify-content-center">
+
+                <select name="roleId" class="form-control">
+                    <option value="">Chọn vai trò</option>
+                    @foreach (var r in roles)
+                    {
+                        <option value="@r.RoleID">@r.RoleName</option>
+                    }
+                </select>
+                <button type="submit" class="btn btn-danger d-flex align-items-center gap-1">
+                    <svg width="16" height="16"
+                         viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Xoá</span>
+                </button>
+            </form>
+
+
         </div>
 
         <!-- Filters -->

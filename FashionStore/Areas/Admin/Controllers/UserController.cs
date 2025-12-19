@@ -105,6 +105,40 @@ namespace FashionStore.Areas.Admin.Controllers
             TempData["Success"] = "Đổi vai trò thành công";
             return RedirectToAction("Index");
         }
-
+        [HttpPost]
+        public ActionResult addRole(string roleName)
+        {
+            Role r = new Role();
+            if (db.Roles.Any(t => t.RoleName == roleName))
+            {
+                TempData["Error"] = "Vai trò đã tồn tại!";
+                return RedirectToAction("Index");
+            }
+            r.RoleName = roleName;
+            db.Roles.Add(r);
+            db.SaveChanges();
+            TempData["Success"] = "Thêm vai trò thành công!";
+            return RedirectToAction("Index");
+        }
+        [HttpPost]
+        public ActionResult dropRole(int roleID)
+        {
+            Role r = db.Roles.FirstOrDefault(t => t.RoleID == roleID);
+            if (r == null)
+            {
+                TempData["Error"] = "Vai trò không hợp lệ!";
+                return RedirectToAction("Index");
+            }
+            List<Customer> lstC = db.Customers.Where(t => t.RoleID == roleID).ToList();
+            if (lstC != null)
+            {
+                TempData["Error"] = "Tồn tại người dùng thuộc vai trò này. Không thể xoá!";
+                return RedirectToAction("Index");
+            }
+            db.Roles.Remove(r);
+            db.SaveChanges();
+            TempData["Success"] = "Xoá vai trò thành công!";
+            return RedirectToAction("Index");
+        }
     }
 }

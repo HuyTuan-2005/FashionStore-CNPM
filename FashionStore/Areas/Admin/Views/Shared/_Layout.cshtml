@@ -14,95 +14,111 @@
 
 </head>
 <body>
-<div class="admin-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Trang quản lý</h2>
-        </div>
-        <nav class="sidebar-nav">
-            <a href="@Url.Action("Index", "dashboard")"
-               class="nav-item @(Request.Url.Segments.Any(x => (x.ToLowerInvariant().Contains("dashboard"))) ? "active" : "")"
-               data-page="dashboard">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                </svg>
-                Dashboard
-            </a>
-            <a href="@Url.Action("Index", "product")" class="nav-item
-                @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("product")) ? "active" : "")"
-               data-page="products">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                Sản phẩm
-            </a>
-            <a href="@Url.Action("Index", "category")" class="nav-item " data-page="categories">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-                Danh mục
-            </a>
-            <a href="@Url.Action("Index", "Order")"
-               class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("order")) ? "active" : "")"
-               data-page="orders">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                </svg>
-                Đơn hàng
-            </a>
-            <a href="@Url.Action("Index", "User")"
-               class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("user")) ? "active" : "")" 
-               data-page="user">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-                Người dùng
-            </a>
-           
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Top Navbar -->
-        <header class="top-navbar">
-            <button id="menuToggle" class="btn btn-icon btn-outline">
-                <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                     stroke-width="2">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
-            <div class="d-flex align-items-center gap-3">
-                <span>@(HttpContext.Current.Session["CustomerUserName"] as string )</span>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Trang quản lý</h2>
             </div>
-        </header>
+            <nav class="sidebar-nav">
+                <a href="@Url.Action("Index", "dashboard")"
+                   class="nav-item @(Request.Url.Segments.Any(x => (x.ToLowerInvariant().Contains("dashboard"))) ? "active" : "")"
+                   data-page="dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="@Url.Action("Index", "product")" class="nav-item
+                @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("product")) ? "active" : "")"
+                   data-page="products">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    Sản phẩm
+                </a>
+                <a href="@Url.Action("Index", "category")" class="nav-item " data-page="categories">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                    Danh mục
+                </a>
+                <a href="@Url.Action("Index", "Order")"
+                   class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("order")) ? "active" : "")"
+                   data-page="orders">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    </svg>
+                    Đơn hàng
+                </a>
+                <a href="@Url.Action("Index", "User")"
+                   class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("user")) ? "active" : "")"
+                   data-page="user">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    Người dùng
+                </a>
+                <a href="/Account/Logout"
+                   class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("logout")) ? "active" : "")"
+                   data-page="logout">
+                    <svg viewBox="0 0 24 24"
+                         fill="none"
+                         stroke="currentColor"
+                         stroke-width="2"
+                         stroke-linecap="round"
+                         stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    <span>Đăng xuất</span>
+                </a>
 
-        @RenderBody()
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Top Navbar -->
+            <header class="top-navbar">
+                <button id="menuToggle" class="btn btn-icon btn-outline">
+                    <svg style="width: 20px; height: 20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                <div class="d-flex align-items-center gap-3">
+                    <span>@(HttpContext.Current.Session["CustomerUserName"] as string )</span>
+                </div>
+            </header>
+
+            @RenderBody()
+        </div>
     </div>
-</div>
 
-@RenderSection("forms", required: false)
+    @RenderSection("forms", required: false)
 
-@Scripts.Render("~/bundles/jquery")
-<script src="~/Scripts/bootstrap.min.js"></script>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/bootstrap.min.js"></script>
 
-<script src="~/Content/js/Admin/dashboard.js"></script>
+    <script src="~/Content/js/Admin/dashboard.js"></script>
 
-@RenderSection("scripts", required: false)
+    @RenderSection("scripts", required: false)
 
+    @Html.Partial("Partial/_UrbanToast")
 </body>
 </html>

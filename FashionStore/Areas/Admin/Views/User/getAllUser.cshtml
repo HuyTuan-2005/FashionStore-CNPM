@@ -1,18 +1,44 @@
 ﻿@using UserTuple = System.Tuple<int, string, string, int, string, System.DateTime, System.Tuple<bool, string>>
 
 @model List<UserTuple>
-@functions{
-    string RoleBadgeClass(string roleName)
+@functions {
+
+    static List<string> BadgeColors = new List<string>
+{
+        "badge-warning",
+        "badge-danger",
+        "badge-info",
+        "badge-success",
+        "badge-primary",
+        "badge-dark"
+    };
+
+    static Dictionary<string, string> UsedRoleColors = new Dictionary<string, string>();
+
+    string GetRoleBadgeColor(string roleName)
     {
-        switch (roleName)
+        if (string.IsNullOrEmpty(roleName))
+            return "badge-secondary";
+
+        if (UsedRoleColors.ContainsKey(roleName))
+            return UsedRoleColors[roleName];
+
+        foreach (var color in BadgeColors)
         {
-            case "Quản Trị Viên": return "badge-danger";
-            case "Nhân Viên": return "badge-warning";
-            case "Khách Hàng": return "badge-info";
-            default: return "badge-secondary";
+            if (!UsedRoleColors.Values.Contains(color))
+            {
+                UsedRoleColors[roleName] = color;
+                return color;
+            }
         }
+
+        string fallbackColor = BadgeColors[UsedRoleColors.Count % BadgeColors.Count];
+        UsedRoleColors[roleName] = fallbackColor;
+        return fallbackColor;
     }
 }
+
+
 
 <!-- Users Table -->
 <div class="card">
@@ -51,7 +77,7 @@
 
                             <td>@i.Item7.Item2</td>
                             <td>
-                                <span class="badge @RoleBadgeClass(i.Item5)"
+                                <span class="badge @GetRoleBadgeColor(i.Item5)"
                                       style="cursor:pointer"
                                       onclick="toggleRoleSelect(@i.Item1)">
                                     @i.Item5
