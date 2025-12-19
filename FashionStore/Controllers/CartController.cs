@@ -1,226 +1,419 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
+using System.Web;
 using System.Web.Mvc;
 using FashionStore.Models;
 using FashionStore.ViewModels;
 
-
 namespace FashionStore.Controllers
 {
-    [CustomAuthorize]
+
     public class CartController : Controller
     {
         private readonly FashionStoreEntities db = new FashionStoreEntities();
 
-        private List<CartItemViewModel> Cart
+  
+        private int CustomerID
         {
             get
             {
-                var cart = Session["Cart"] as List<CartItemViewModel>;
+                var customer = Session["Customer"] as Customer;
+                return customer?.CustomerID ?? 0;
+            }
+        }
+
+     
+        private Cart GetOrCreateCart()
+        {
+            var customer = Session["Customer"] as Customer;
+
+            if (customer != null)
+            {
+                // USER ĐÃ LOGIN → Tìm theo CustomerID
+                var cart = db.Carts.FirstOrDefault(c => c.CustomerID == customer.CustomerID);
+
                 if (cart == null)
                 {
-                    cart = new List<CartItemViewModel>();
-                    Session["Cart"] = cart;
+                    cart = new Cart
+                    {
+                        CustomerID = customer.CustomerID,
+                        CartToken = Guid.NewGuid().ToString(),
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+                    db.Carts.Add(cart);
+                    db.SaveChanges();
                 }
 
                 return cart;
             }
-        }
-
-
-        private List<ProductVariant> ProductsInCart
-        {
-            get
-            {
-                var ids = Cart.Select(p => p.VariantID).ToList();
-                return db.ProductVariants.Where(x => ids.Contains(x.VariantID)).ToList();
-            }
-        }
-
-        
-        private bool RemoveProductInCart(int? id)
-        {
-            if (!id.HasValue) return false;
-            var item = Cart.FirstOrDefault(x => x.VariantID == id.Value);
-
-            if (item != null)
-            {
-                Cart.Remove(item);
-                return true;
-            }
             else
             {
-                return false;
+                // GUEST → Tìm theo CartToken trong Cookie
+                var cartToken = Request.Cookies["CartToken"]?.Value;
+
+                if (!string.IsNullOrEmpty(cartToken))
+                {
+                    var cart = db.Carts.FirstOrDefault(c =>
+                        c.CartToken == cartToken &&
+                        c.CustomerID == null);
+
+                    if (cart != null)
+                    {
+                        return cart;
+                    }
+                }
+
+                // TẠO CART MỚI CHO GUEST
+                var newToken = Guid.NewGuid().ToString();
+                var newCart = new Cart
+                {
+                    CustomerID = null,  // NULL cho guest
+                    CartToken = newToken,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+                db.Carts.Add(newCart);
+                db.SaveChanges();
+
+                // LƯU TOKEN VÀO COOKIE (30 ngày)
+                var cookie = new HttpCookie("CartToken", newToken)
+                {
+                    Expires = DateTime.Now.AddDays(30),
+                    HttpOnly = true, // Bảo mật
+                    Secure = false   // Đổi thành true nếu dùng HTTPS
+                };
+                Response.Cookies.Add(cookie);
+
+                return newCart;
             }
         }
-        // SHOW CART
+
+      
         public ActionResult Index()
         {
-            return View(ProductsInCart);
+            var cart = GetOrCreateCart();
+
+            var cartItems = db.CartItems
+                .Where(ci => ci.CartID == cart.CartID)
+                .Include(ci => ci.ProductVariant.Product)
+                .Include(ci => ci.ProductVariant.Product.ProductImages)
+                .Include(ci => ci.ProductVariant.Color)
+                .Include(ci => ci.ProductVariant.Size)
+                .ToList();
+
+            // CẬP NHẬT SESSION ĐỂ NAVBAR HIỂN THỊ BADGE
+            UpdateCartSession();
+
+            // TRẢ VỀ LIST PRODUCTVARIANT ĐỂ TƯƠNG THÍCH VỚI VIEW HIỆN TẠI
+            return View(cartItems.Select(ci => ci.ProductVariant).ToList());
         }
 
-        // ADD TO CART
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult AddToCart(CartItemViewModel cart, int ColorId, int SizeId)
+        public ActionResult AddToCart(CartItemViewModel cartModel, int ColorId, int SizeId)
         {
-            if (cart == null || cart.ProductID <= 0 || cart.Quantity <= 0)
+            if (cartModel == null || cartModel.ProductID <= 0 || cartModel.Quantity <= 0)
             {
                 TempData["Error"] = "Dữ liệu giỏ hàng không hợp lệ.";
-                return RedirectToAction("Details", "Product", new { id = cart?.ProductID });
+                return RedirectToAction("Details", "Product", new { id = cartModel?.ProductID });
             }
 
-            
-            // 2. Lấy sản phẩm
+            // LẤY SẢN PHẨM
             var product = db.Products
-                .FirstOrDefault(p => p.ProductID == cart.ProductID && p.IsActive == true);
+                .FirstOrDefault(p => p.ProductID == cartModel.ProductID && p.IsActive == true);
 
             if (product == null)
             {
                 return HttpNotFound();
             }
 
-            // 3. Tìm biến thể (variant) theo màu + size
+            // TÌM VARIANT
             var variant = product.ProductVariants
                 .FirstOrDefault(v => v.ColorID == ColorId && v.SizeID == SizeId);
 
             if (variant == null)
             {
-                TempData["Error"] = "Biến thể sản phẩm không tồn tại hoặc đã ngừng bán.";
-                return RedirectToAction("Details", "Product", new { id = cart.ProductID });
+                TempData["Error"] = "Biến thể sản phẩm không tồn tại.";
+                return RedirectToAction("Details", "Product", new { id = cartModel.ProductID });
             }
 
-            if (variant.Stock < cart.Quantity)
+            if (variant.Stock < cartModel.Quantity)
             {
                 TempData["Error"] = $"Chỉ còn {variant.Stock} sản phẩm trong kho.";
-                return RedirectToAction("Details", "Product", new { id = cart.ProductID });
+                return RedirectToAction("Details", "Product", new { id = cartModel.ProductID });
             }
 
-            var cartSession = Session["Cart"] as List<CartItemViewModel> ?? new List<CartItemViewModel>();
+            // LẤY HOẶC TẠO CART (GUEST HOẶC USER)
+            var cart = GetOrCreateCart();
 
-            var existing = cartSession.FirstOrDefault(c => c.VariantID == variant.VariantID);
+            // TÌM ITEM ĐÃ CÓ TRONG GIỎ
+            var existingItem = db.CartItems.FirstOrDefault(ci =>
+                ci.CartID == cart.CartID &&
+                ci.VariantID == variant.VariantID);
 
-            if (existing != null)
+            if (existingItem != null)
             {
-                // Cộng dồn số lượng, có thể check lại tồn kho
-                var newQuantity = existing.Quantity + cart.Quantity;
+                // CẬP NHẬT SỐ LƯỢNG
+                var newQuantity = existingItem.Quantity + cartModel.Quantity;
+
                 if (newQuantity > variant.Stock)
                 {
                     TempData["Error"] = $"Bạn chỉ có thể mua tối đa {variant.Stock} sản phẩm này.";
-                    return RedirectToAction("Details", "Product", new { id = cart.ProductID });
+                    return RedirectToAction("Details", "Product", new { id = cartModel.ProductID });
                 }
 
-                existing.Quantity = newQuantity;
+                existingItem.Quantity = newQuantity;
             }
             else
             {
-                // Thêm mới
-                cartSession.Add(new CartItemViewModel
+                // THÊM MỚI
+                db.CartItems.Add(new CartItem
                 {
-                    ProductID = cart.ProductID,
+                    CartID = cart.CartID,
                     VariantID = variant.VariantID,
-                    Quantity = cart.Quantity
+                    Quantity = cartModel.Quantity,
+                    AddedAt = DateTime.Now
                 });
             }
 
-            // 7. Lưu lại vào Session
-            Session["Cart"] = cartSession;
+            cart.UpdatedAt = DateTime.Now;
+            db.SaveChanges();
+
+            // CẬP NHẬT SESSION
+            UpdateCartSession();
 
             TempData["Success"] = "Đã thêm sản phẩm vào giỏ hàng.";
             return RedirectToAction("Index", "Product");
         }
 
-
-        // REMOVE ITEM
+        //Xoá sản phẩm khỏi giỏ hàng
         public ActionResult Remove(int? id)
         {
-            var result = RemoveProductInCart(id);
-
-            if (result)
+            if (!id.HasValue)
             {
-                TempData["Success"] = $"Đã xóa sản phẩm khỏi giỏ hàng.";
+                return RedirectToAction("Index");
             }
-            
+
+            var cart = GetOrCreateCart();
+
+            var cartItem = db.CartItems.FirstOrDefault(ci =>
+                ci.CartID == cart.CartID &&
+                ci.VariantID == id.Value);
+
+            if (cartItem != null)
+            {
+                db.CartItems.Remove(cartItem);
+                cart.UpdatedAt = DateTime.Now;
+                db.SaveChanges();
+
+                UpdateCartSession();
+                TempData["Success"] = "Đã xóa sản phẩm khỏi giỏ hàng.";
+            }
+
             return RedirectToAction("Index");
+        }
+
+      //Update số lượng
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult UpdateQuantity(int variantId, int quantity)
+        {
+            try
+            {
+                if (quantity <= 0)
+                {
+                    return Json(new { success = false, message = "Số lượng phải lớn hơn 0." });
+                }
+
+                var cart = GetOrCreateCart();
+
+                var cartItem = db.CartItems.FirstOrDefault(ci =>
+                    ci.CartID == cart.CartID &&
+                    ci.VariantID == variantId);
+
+                if (cartItem == null)
+                {
+                    return Json(new { success = false, message = "Sản phẩm không có trong giỏ hàng." });
+                }
+
+                var variant = db.ProductVariants
+                    .Include(v => v.Product)
+                    .FirstOrDefault(v => v.VariantID == variantId);
+
+                if (variant == null)
+                {
+                    return Json(new { success = false, message = "Sản phẩm không tồn tại." });
+                }
+
+                if (quantity > variant.Stock)
+                {
+                    return Json(new { success = false, message = $"Chỉ còn {variant.Stock} sản phẩm trong kho." });
+                }
+
+                cartItem.Quantity = quantity;
+                cart.UpdatedAt = DateTime.Now;
+                db.SaveChanges();
+
+                var price = variant.Product.BasePrice;
+                var itemTotal = price * quantity;
+
+                // TÍNH TỔNG TIỀN TOÀN BỘ GIỎ
+                decimal grandTotal = 0;
+                var allItems = db.CartItems
+                    .Where(ci => ci.CartID == cart.CartID)
+                    .Include(ci => ci.ProductVariant.Product)
+                    .ToList();
+
+                foreach (var item in allItems)
+                {
+                    grandTotal += item.ProductVariant.Product.BasePrice * item.Quantity;
+                }
+
+                UpdateCartSession();
+
+                return Json(new
+                {
+                    success = true,
+                    itemTotal = itemTotal.ToString("N0"),
+                    grandTotal = grandTotal.ToString("N0")
+                });
+            }
+            catch (Exception)
+            {
+                return Json(new { success = false, message = "Có lỗi xảy ra. Vui lòng thử lại." });
+            }
         }
 
         [HttpGet]
+        [CustomAuthorize] // ← CHỈ CHECKOUT MỚI CẦN LOGIN
         public ActionResult Checkout()
         {
-            if (Cart.Count <= 0)
+            var cart = GetOrCreateCart();
+
+            var cartItemCount = db.CartItems.Count(ci => ci.CartID == cart.CartID);
+
+            if (cartItemCount == 0)
             {
                 TempData["Error"] = "Bạn chưa có sản phẩm nào trong giỏ hàng";
                 return RedirectToAction("Index");
             }
-            
-            var cus = Session["Customer"] as Customer ?? new Customer();
+
+            var cus = Session["Customer"] as Customer;
             var profile = db.CustomerProfiles.Find(cus.CustomerID);
-            
+
             return View(profile);
         }
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [CustomAuthorize] // ← CHỈ CHECKOUT MỚI CẦN LOGIN
         public ActionResult Checkout(CustomerProfile model)
         {
-            var cart = Cart;
-            if (cart.Count <= 0)
+            var cart = GetOrCreateCart();
+            var cartItems = db.CartItems
+                .Where(ci => ci.CartID == cart.CartID)
+                .Include(ci => ci.ProductVariant.Product)
+                .ToList();
+
+            if (cartItems.Count == 0)
             {
                 TempData["Error"] = "Bạn chưa có sản phẩm nào trong giỏ hàng";
                 return RedirectToAction("Index");
             }
-            var lstProduct = ProductsInCart;
-            
+
             var cus = Session["Customer"] as Customer;
-            
-            var order = new Order();
-            
-            order.PaymentMethod = "COD";
-            order.ShippingAddress = string.Join(", ", model.Address, model.District, model.City);
-            order.OrderDate = DateTime.Now;
-            order.Status = "Pending";
-            order.CustomerID = cus != null ? cus.CustomerID : throw new Exception("Thông tin người dùng không hợp lệ");
-            order.PhoneNumber = model.PhoneNumber;
-            order.FullName = model.FullName;
 
-
-            foreach (var product in lstProduct)
+            var order = new Order
             {
-                var cartProduct = cart.FirstOrDefault(c => c.VariantID == product.VariantID);
+                PaymentMethod = "COD",
+                ShippingAddress = string.Join(", ", model.Address, model.District, model.City),
+                OrderDate = DateTime.Now,
+                Status = "Pending",
+                CustomerID = cus.CustomerID,
+                PhoneNumber = model.PhoneNumber,
+                FullName = model.FullName
+            };
 
-                if (cartProduct.Quantity > product.Stock)
+            foreach (var cartItem in cartItems)
+            {
+                var variant = cartItem.ProductVariant;
+
+                if (cartItem.Quantity > variant.Stock)
                 {
-                    TempData["Error"] = $"Sản phẩm {product.Product.ProductName} trong giỏ hàng của bạn đã hết.";
-                    RemoveProductInCart(cartProduct.VariantID);
+                    TempData["Error"] = $"Sản phẩm {variant.Product.ProductName} không đủ số lượng.";
                     return RedirectToAction("Index", "Cart");
                 }
-                
-                order.OrderDetails.Add(new OrderDetail()
+
+                order.OrderDetails.Add(new OrderDetail
                 {
-                    Price = product.Product.BasePrice,
-                    VariantID = product.VariantID,
-                    Quantity = cartProduct != null ? cartProduct.Quantity : throw new Exception("Số lượng đặt hàng không hợp lệ"),
+                    Price = variant.Product.BasePrice,
+                    VariantID = variant.VariantID,
+                    Quantity = cartItem.Quantity,
                     DiscountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0
                 });
-                product.Stock -= cartProduct.Quantity;
+
+                variant.Stock -= cartItem.Quantity;
             }
-            
+
             order.TotalAmount = order.OrderDetails.Sum(x => (x.Price * (1 - x.DiscountPercent.Value / 100)) * x.Quantity);
-            
+
             db.Orders.Add(order);
+
+            // XÓA GIỎ HÀNG SAU KHI ĐẶT HÀNG THÀNH CÔNG
+            db.CartItems.RemoveRange(cartItems);
             db.SaveChanges();
-            
+
             Session["Cart"] = null;
-            TempData["Success"] = $"Đặt hàng thành công.";
+            TempData["Success"] = "Đặt hàng thành công.";
             return RedirectToAction("Index", "Order");
         }
-        
-        // CLEAR CART
+
+        // ============================================
+        // XÓA TOÀN BỘ GIỎ HÀNG
+        // ============================================
         public ActionResult Clear()
         {
+            var cart = GetOrCreateCart();
+            var cartItems = db.CartItems.Where(ci => ci.CartID == cart.CartID).ToList();
+            db.CartItems.RemoveRange(cartItems);
+            db.SaveChanges();
+
             Session["Cart"] = null;
             return RedirectToAction("Index");
+        }
+
+        // ============================================
+        // HELPER: CẬP NHẬT SESSION (ĐỂ NAVBAR HIỂN THỊ BADGE)
+        // ============================================
+        private void UpdateCartSession()
+        {
+            var cart = GetOrCreateCart();
+
+            var cartItems = db.CartItems
+                .Where(ci => ci.CartID == cart.CartID)
+                .Include(ci => ci.ProductVariant)
+                .ToList();
+
+            var viewModel = cartItems.Select(ci => new CartItemViewModel
+            {
+                ProductID = ci.ProductVariant.ProductID,
+                VariantID = ci.VariantID,
+                Quantity = ci.Quantity
+            }).ToList();
+
+            Session["Cart"] = viewModel;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
