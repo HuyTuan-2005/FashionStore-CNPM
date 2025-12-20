@@ -139,7 +139,7 @@ namespace FashionStore.Controllers
                         // Commit transaction
                         transaction.Commit();
 
-                        TempData["Success"] = "Đã hủy đơn hàng thành công. Số lượng sản phẩm đã được hoàn trả vào kho.";
+                        TempData["Success"] = "Hủy đặt hàng thành công, cảm ơn quý khách.";
                     }
                     catch (Exception ex)
                     {
