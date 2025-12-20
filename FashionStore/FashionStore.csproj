@@ -262,6 +262,7 @@
     <Content Include="Content\css\order.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\toast.css" />
+    <Content Include="Content\js\Admin\category-admin.js" />
     <Content Include="Content\js\Admin\dashboard.js" />
     <Content Include="Content\js\Admin\order-admin.js" />
     <Content Include="Content\js\Admin\product-admin.js" />
