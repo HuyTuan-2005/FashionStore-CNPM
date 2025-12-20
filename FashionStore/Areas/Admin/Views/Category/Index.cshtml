@@ -1,0 +1,238 @@
+﻿
+@{
+    ViewBag.Title = "Danh mục";
+}
+<div class="breadcrumb">
+    <a href="index.html">Dashboard</a>
+    <span class="breadcrumb-separator">/</span>
+    <span>Danh mục</span>
+</div>
+
+<div class="content-area">
+    <div class="d-flex justify-content-between align-items-center mb-6">
+        <div>
+            <h1>Quản lý Danh mục</h1>
+            <p class="text-muted mt-1">Danh sách tất cả danh mục sản phẩm</p>
+        </div>
+        <a href="#" onclick="openModal('','addCategoryModal')" class="btn btn-primary">
+            <svg style="width: 16px; height: 16px; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Thêm danh mục
+        </a>
+    </div>
+
+    <!-- Search -->
+    <div class="card mb-6">
+        <div class="card-content">
+            <input type="search" id="searchInput" class="form-control" placeholder="Tìm kiếm danh mục...">
+        </div>
+    </div>
+
+    <!-- Categories Grid -->
+    <div class="grid grid-cols-3">
+        <div class="card">
+            <div class="card-content">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg style="width: 32px; height: 32px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3>Điện thoại</h3>
+                        <p class="text-muted mt-1">456 sản phẩm</p>
+                        <div class="d-flex gap-2 mt-3">
+                            <a href="category-edit.html" class="btn btn-outline btn-sm">Sửa</a>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('1', 'Điện thoại', 'danh mục')">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--success) 0%, #0ea850 100%); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg style="width: 32px; height: 32px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3>Laptop</h3>
+                        <p class="text-muted mt-1">324 sản phẩm</p>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-outline btn-sm" onclick="openModal('editCategoryModal')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('2', 'Laptop', 'danh mục')">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--warning) 0%, #ff9800 100%); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg style="width: 32px; height: 32px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3>Tablet</h3>
+                        <p class="text-muted mt-1">198 sản phẩm</p>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-outline btn-sm" onclick="openModal('editCategoryModal')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('3', 'Tablet', 'danh mục')">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--secondary) 0%, #495057 100%); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg style="width: 32px; height: 32px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a10 10 0 1 0 10 10H12V2Z"></path>
+                            <path d="M17.7 16.7a10 10 0 0 0 0-9.4"></path>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3>Phụ kiện</h3>
+                        <p class="text-muted mt-1">892 sản phẩm</p>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-outline btn-sm" onclick="openModal('editCategoryModal')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('4', 'Phụ kiện', 'danh mục')">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, var(--info) 0%, #0099cc 100%); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg style="width: 32px; height: 32px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2a10 10 0 1 0 10 10"></path>
+                            <path d="M12 2v10l7 3"></path>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3>Đồng hồ</h3>
+                        <p class="text-muted mt-1">167 sản phẩm</p>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-outline btn-sm" onclick="openModal('editCategoryModal')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('5', 'Đồng hồ', 'danh mục')">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-content">
+                <div style="display: flex; align-items: start; gap: 1rem;">
+                    <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg style="width: 32px; height: 32px; color: white;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3>Smart Home</h3>
+                        <p class="text-muted mt-1">234 sản phẩm</p>
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-outline btn-sm" onclick="openModal('editCategoryModal')">Sửa</button>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('6', 'Smart Home', 'danh mục')">Xóa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*them danh muc*@
+<div id="addCategoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Thêm danh mục mới</h3>
+            <button class="btn btn-icon" onclick="closeModal('addCategoryModal')" style="background: none; border: none; font-size: 24px;">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="addCategoryForm">
+                <div class="form-group">
+                    <label class="form-label">Tên danh mục <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" required="" placeholder="Nhập tên danh mục">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Danh mục cha <span class="text-danger">*</span></label>
+                    <select class="form-control">
+                        <option value="">Không có</option>
+                        <option>Điện thoại</option>
+                        <option>Laptop</option>
+                        <option>Tablet</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('addCategoryModal')">Hủy</button>
+            <button class="btn btn-primary" onclick="if(validateForm('addCategoryForm')) { closeModal('addCategoryModal'); showToast('Đã thêm danh mục thành công'); }">Thêm danh mục</button>
+        </div>
+    </div>
+</div>
+
+
+@*sua danh muc*@
+<div id="editCategoryModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Chỉnh sửa danh mục</h3>
+            <button class="btn btn-icon" onclick="closeModal('editCategoryModal')" style="background: none; border: none; font-size: 24px;">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="editCategoryForm">
+                <div class="form-group">
+                    <label class="form-label">Tên danh mục *</label>
+                    <input type="text" class="form-control" value="Điện thoại" required="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Slug</label>
+                    <input type="text" class="form-control" value="dien-thoai">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Mô tả</label>
+                    <textarea class="form-control">Các sản phẩm điện thoại thông minh</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Danh mục cha</label>
+                    <select class="form-control">
+                        <option value="" selected="">Không có</option>
+                        <option>Laptop</option>
+                        <option>Tablet</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('editCategoryModal')">Hủy</button>
+            <button class="btn btn-primary" onclick="if(validateForm('editCategoryForm')) { closeModal('editCategoryModal'); showToast('Đã cập nhật danh mục thành công'); }">Cập nhật</button>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/Content/js/Admin/category-admin.js"></script>
+}
