@@ -134,7 +134,7 @@ namespace FashionStore.Services
             var pattern = @"^(0|\+84)[1-9][0-9]{8,9}$";
             if (!Regex.IsMatch(trimmed, pattern))
             {
-                result.AddError("Số điện thoại không đúng định dạng. Ví dụ: 0912345678 hoặc +84912345678");
+                result.AddError("Số điện thoại không hợp lệ.");
             }
         }
 

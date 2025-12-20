@@ -28,7 +28,7 @@ namespace FashionStore.Attributes
 
         public override string FormatErrorMessage(string name)
         {
-            return $"Số điện thoại không đúng định dạng. Ví dụ: 0912345678 hoặc +84912345678";
+            return "Số điện thoại không hợp lệ.";
         }
     }
 }

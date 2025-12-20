@@ -254,11 +254,18 @@ namespace FashionStore.Controllers
                     return Json(new { success = false, message = $"Chỉ còn {variant.Stock} sản phẩm trong kho." });
                 }
 
+                // Load Product để lấy giá
+                var product = db.Products.Find(variant.ProductID);
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Sản phẩm không tồn tại." });
+                }
+
                 cartItem.Quantity = quantity;
                 cart.UpdatedAt = DateTime.Now;
                 db.SaveChanges();
 
-                var price = variant.Product.BasePrice;
+                var price = product.BasePrice;
                 var itemTotal = price * quantity;
 
                 // TÍNH TỔNG TIỀN TOÀN BỘ GIỎ
@@ -317,6 +324,10 @@ namespace FashionStore.Controllers
             foreach (var cartItem in cartItems)
             {
                 var variant = cartItem.ProductVariant;
+                if (variant == null || variant.Product == null)
+                {
+                    continue; // Bỏ qua nếu variant hoặc product null
+                }
                 var discountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0;
                 var itemPrice = variant.Product.BasePrice;
                 var itemSubTotal = itemPrice * cartItem.Quantity;
@@ -370,37 +381,14 @@ namespace FashionStore.Controllers
 
             if (!validationResult.IsValid)
             {
-                // Thêm lỗi vào ModelState để hiển thị trên view
-                foreach (var error in validationResult.Errors)
-                {
-                    ModelState.AddModelError("", error);
-                }
-
-                // Reload dữ liệu để hiển thị lại form
-                var profile = db.CustomerProfiles.Find(cus.CustomerID);
-                viewModel.CustomerProfile = profile ?? viewModel.CustomerProfile ?? new CustomerProfile { ProfileID = cus.CustomerID };
-
-                // Tính lại shipping fee và totals
-                var shippingService = new ShippingService();
-                var shippingFee = shippingService.CalculateShippingFee(viewModel.CustomerProfile?.City);
-                decimal subTotal = 0;
-                decimal totalDiscount = 0;
-                foreach (var cartItem in cartItems)
-                {
-                    var variant = cartItem.ProductVariant;
-                    var discountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0;
-                    var itemPrice = variant.Product.BasePrice;
-                    var itemSubTotal = itemPrice * cartItem.Quantity;
-                    var itemDiscount = itemSubTotal * discountPercent / 100;
-                    subTotal += itemSubTotal;
-                    totalDiscount += itemDiscount;
-                }
-                viewModel.ShippingFee = shippingFee;
-                viewModel.SubTotal = subTotal;
-                viewModel.TotalDiscount = totalDiscount;
-                viewModel.GrandTotal = subTotal - totalDiscount + shippingFee;
-
-                return View(viewModel);
+                // Chỉ thông báo lỗi, không reload dữ liệu
+                // Gộp tất cả lỗi thành một message
+                var errorMessage = string.Join("<br/>", validationResult.Errors);
+                TempData["Error"] = errorMessage;
+                
+                // Redirect về trang checkout để người dùng sửa lại
+                // Không reload dữ liệu, giữ nguyên form hiện tại
+                return RedirectToAction("Checkout");
             }
 
             var orderService = new OrderService(db);
@@ -442,6 +430,10 @@ namespace FashionStore.Controllers
                     foreach (var cartItem in cartItems)
                     {
                         var variant = cartItem.ProductVariant;
+                        if (variant == null || variant.Product == null)
+                        {
+                            throw new InvalidOperationException($"Product variant {cartItem.VariantID} không tồn tại hoặc đã bị xóa.");
+                        }
                         var discountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0;
 
                         order.OrderDetails.Add(new OrderDetail
