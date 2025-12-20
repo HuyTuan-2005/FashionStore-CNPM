@@ -63,9 +63,9 @@ namespace FashionStore.Areas.Admin.Controllers
                     (x.Quantity) * (x.Price)),
                 
                 TotalDiscount = order.OrderDetails.Sum(x =>
-                    (x.Quantity) * (x.Price) * ((x.DiscountPercent) / 100)).Value,
+                    (x.Quantity) * (x.Price) * ((x.DiscountPercent ?? 0) / 100)),
                 
-                ShippingFee = 0, 
+                ShippingFee = order.ShippingFee ?? 0, // Lấy từ database, mặc định 0 nếu null
             };
 
             viewModel.GrandTotal = viewModel.SubTotal - viewModel.TotalDiscount + viewModel.ShippingFee;

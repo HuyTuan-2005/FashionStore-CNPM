@@ -305,10 +305,41 @@ namespace FashionStore.Controllers
             var cus = Session["Customer"] as Customer;
             var profile = db.CustomerProfiles.Find(cus.CustomerID);
 
+            // Load cart items để tính tổng tiền
+            var cartItems = db.CartItems
+                .Where(ci => ci.CartID == cart.CartID)
+                .Include(ci => ci.ProductVariant.Product)
+                .ToList();
+
+            // Tính tổng tiền sản phẩm
+            decimal subTotal = 0;
+            decimal totalDiscount = 0;
+            foreach (var cartItem in cartItems)
+            {
+                var variant = cartItem.ProductVariant;
+                var discountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0;
+                var itemPrice = variant.Product.BasePrice;
+                var itemSubTotal = itemPrice * cartItem.Quantity;
+                var itemDiscount = itemSubTotal * discountPercent / 100;
+
+                subTotal += itemSubTotal;
+                totalDiscount += itemDiscount;
+            }
+
+            // Tính phí giao hàng
+            var shippingService = new ShippingService();
+            var shippingFee = shippingService.CalculateShippingFee(profile?.City);
+            var grandTotal = subTotal - totalDiscount + shippingFee;
+
             var viewModel = new CheckoutViewModel
             {
                 CustomerProfile = profile ?? new CustomerProfile { ProfileID = cus.CustomerID },
-                PaymentMethod = PaymentMethod.COD.ToString() // Default value
+                PaymentMethod = PaymentMethod.COD.ToString(),
+                ShippingMethod = ShippingMethod.Standard.ToString(),
+                ShippingFee = shippingFee,
+                SubTotal = subTotal,
+                TotalDiscount = totalDiscount,
+                GrandTotal = grandTotal
             };
 
             return View(viewModel);
@@ -332,6 +363,46 @@ namespace FashionStore.Controllers
             }
 
             var cus = Session["Customer"] as Customer;
+
+            // BACKEND VALIDATION - Bắt buộc validate lại toàn bộ dữ liệu
+            var validationService = new CheckoutValidationService();
+            var validationResult = validationService.ValidateCheckout(viewModel, cartItems);
+
+            if (!validationResult.IsValid)
+            {
+                // Thêm lỗi vào ModelState để hiển thị trên view
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError("", error);
+                }
+
+                // Reload dữ liệu để hiển thị lại form
+                var profile = db.CustomerProfiles.Find(cus.CustomerID);
+                viewModel.CustomerProfile = profile ?? viewModel.CustomerProfile ?? new CustomerProfile { ProfileID = cus.CustomerID };
+
+                // Tính lại shipping fee và totals
+                var shippingService = new ShippingService();
+                var shippingFee = shippingService.CalculateShippingFee(viewModel.CustomerProfile?.City);
+                decimal subTotal = 0;
+                decimal totalDiscount = 0;
+                foreach (var cartItem in cartItems)
+                {
+                    var variant = cartItem.ProductVariant;
+                    var discountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0;
+                    var itemPrice = variant.Product.BasePrice;
+                    var itemSubTotal = itemPrice * cartItem.Quantity;
+                    var itemDiscount = itemSubTotal * discountPercent / 100;
+                    subTotal += itemSubTotal;
+                    totalDiscount += itemDiscount;
+                }
+                viewModel.ShippingFee = shippingFee;
+                viewModel.SubTotal = subTotal;
+                viewModel.TotalDiscount = totalDiscount;
+                viewModel.GrandTotal = subTotal - totalDiscount + shippingFee;
+
+                return View(viewModel);
+            }
+
             var orderService = new OrderService(db);
 
             // Validate and get PaymentMethod from user selection
@@ -346,16 +417,25 @@ namespace FashionStore.Controllers
 
                     var profile = viewModel.CustomerProfile ?? new CustomerProfile();
 
+                    // Tính phí giao hàng trước khi tạo order
+                    var shippingService = new ShippingService();
+                    var shippingMethod = ValidateAndGetShippingMethod(viewModel.ShippingMethod);
+                    var shippingFee = shippingService.CalculateShippingFee(profile.City);
+
                     // Create order
                     var order = new Order
                     {
                         PaymentMethod = paymentMethod,
-                        ShippingAddress = string.Join(", ", profile.Address, profile.District, profile.City),
+                        ShippingAddress = string.Join(", ", 
+                            new[] { profile.Address, profile.District, profile.City }
+                            .Where(s => !string.IsNullOrWhiteSpace(s))),
                         OrderDate = DateTime.Now,
                         Status = OrderStatus.Pending.ToString(),
                         CustomerID = cus.CustomerID,
                         PhoneNumber = profile.PhoneNumber,
-                        FullName = profile.FullName
+                        FullName = profile.FullName,
+                        ShippingMethod = shippingMethod,
+                        ShippingFee = (decimal?)shippingFee  // Cast to nullable decimal
                     };
 
                     // Create order details and calculate total
@@ -373,8 +453,12 @@ namespace FashionStore.Controllers
                         });
                     }
 
-                    order.TotalAmount = order.OrderDetails.Sum(x => 
+                    // Tính tổng tiền sản phẩm (chưa có shipping fee)
+                    decimal subTotal = order.OrderDetails.Sum(x => 
                         (x.Price * (1 - (x.DiscountPercent ?? 0) / 100)) * x.Quantity);
+
+                    // Tổng tiền = Tổng sản phẩm + Phí giao hàng (đã tính ở trên)
+                    order.TotalAmount = subTotal + shippingFee;
 
                     // Deduct stock (atomic operation within transaction)
                     orderService.DeductStock(cartItems);
@@ -441,6 +525,16 @@ namespace FashionStore.Controllers
         {
             // Chỉ chấp nhận COD, bỏ qua tất cả các phương thức khác
             return PaymentMethod.COD.ToString();
+        }
+
+        // ============================================
+        // HELPER: VALIDATE SHIPPING METHOD
+        // Chỉ hỗ trợ Standard - các phương thức khác đã bị khóa
+        // ============================================
+        private string ValidateAndGetShippingMethod(string shippingMethod)
+        {
+            // Chỉ chấp nhận Standard, bỏ qua tất cả các phương thức khác
+            return ShippingMethod.Standard.ToString();
         }
 
         // ============================================

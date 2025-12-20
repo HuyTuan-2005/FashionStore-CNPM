@@ -98,6 +98,8 @@
           <Property Name="ShippingAddress" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="TotalAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="PaymentMethod" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingMethod" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingFee" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="ProductImages">
           <Key>
@@ -521,6 +523,8 @@
           <NavigationProperty Name="OrderDetails" Relationship="Self.FK__OrderDeta__Order__208CD6FA" FromRole="Orders" ToRole="OrderDetails" />
           <Property Name="FullName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingMethod" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingFee" Type="Decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="ProductImage">
           <Key>
@@ -974,6 +978,8 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="FashionStoreModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="ShippingFee" ColumnName="ShippingFee" />
+                <ScalarProperty Name="ShippingMethod" ColumnName="ShippingMethod" />
                 <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />

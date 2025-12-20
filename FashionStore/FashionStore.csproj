@@ -198,7 +198,14 @@
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\CheckoutValidationService.cs" />
     <Compile Include="Services\OrderService.cs" />
+    <Compile Include="Services\ShippingService.cs" />
+    <Compile Include="Attributes\VietnamesePhoneAttribute.cs" />
+    <Compile Include="Attributes\ValidFullNameAttribute.cs" />
+    <Compile Include="Models\CustomerProfile.partial.cs">
+      <DependentUpon>CustomerProfile.cs</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\CartItemViewModel.cs" />
     <Compile Include="ViewModels\CheckoutViewModel.cs" />
     <Compile Include="ViewModels\OrderDetailViewModel.cs" />

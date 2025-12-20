@@ -23,5 +23,10 @@ namespace FashionStore.Models
         Completed = 4,
         Cancelled = 5
     }
+
+    public enum ShippingMethod
+    {
+        Standard = 1
+    }
 }
 

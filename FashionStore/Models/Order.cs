@@ -29,6 +29,8 @@ namespace FashionStore.Models
         public string PaymentMethod { get; set; }
         public string FullName { get; set; }
         public string PhoneNumber { get; set; }
+        public string ShippingMethod { get; set; }
+        public Nullable<decimal> ShippingFee { get; set; }
     
         public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
