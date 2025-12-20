@@ -1,4 +1,5 @@
-﻿@model FashionStore.Models.CustomerProfile
+﻿@model FashionStore.ViewModels.CheckoutViewModel
+@using System.Linq
 @{
     ViewBag.Title = "Xác nhận thông tin đặt hàng";
 }
@@ -20,7 +21,7 @@
                     @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 
                     <!-- Hidden ProfileID -->
-                    @Html.HiddenFor(model => model.ProfileID)
+                    @Html.HiddenFor(model => model.CustomerProfile.ProfileID)
 
                     <!-- Số điện thoại và Email -->
                     <div class="row mb-3">
@@ -29,53 +30,67 @@
                             <label for="FullName" class="form-label fs-6 text-dark fw-semibold">
                                 Họ và tên <span class="text-danger">*</span>
                             </label>
-                            @Html.TextBoxFor(model => model.FullName, new { 
+                            @Html.TextBoxFor(model => model.CustomerProfile.FullName, new { 
                                 @class = "form-control shadow-none px-3 py-2", 
                                 placeholder = "Nhập họ và tên đầy đủ",
                                 required = "required"
                             })
-                            @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger small" })
+                            @Html.ValidationMessageFor(model => model.CustomerProfile.FullName, "", new { @class = "text-danger small" })
                         </div>
                         
                         <div class="col-md-6">
                             <label for="PhoneNumber" class="form-label fs-6 text-dark fw-semibold">
                                 Số điện thoại <span class="text-danger">*</span>
                             </label>
-                            @Html.TextBoxFor(model => model.PhoneNumber, new
+                            @Html.TextBoxFor(model => model.CustomerProfile.PhoneNumber, new
                             {
                                 @class = "form-control shadow-none px-3 py-2",
                                 placeholder = "0912345678",
                                 type = "tel",
                                 required = "required"
                             })
-                            @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger small" })
+                            @Html.ValidationMessageFor(model => model.CustomerProfile.PhoneNumber, "", new { @class = "text-danger small" })
                         </div>
 
                     </div>
 
 
-                    <!-- Quận/Huyện và Thành phố -->
+                    <!-- Tỉnh/Thành phố và Quận/Huyện -->
                     <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="District" class="form-label fs-6 text-dark fw-semibold">
-                                Quận/Huyện
+                        <div class="col-md-6 mb-3">
+                            <label for="City" class="form-label fs-6 text-dark fw-semibold">
+                                Tỉnh/Thành phố <span class="text-danger">*</span>
                             </label>
-                            @Html.TextBoxFor(model => model.District, new { 
-                                @class = "form-control shadow-none px-3 py-2", 
-                                placeholder = "Quận 1, Quận 7..."
-                            })
-                            @Html.ValidationMessageFor(model => model.District, "", new { @class = "text-danger small" })
+                            @Html.DropDownListFor(
+                                model => model.CustomerProfile.City,
+                                new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+                                "-- Chọn tỉnh/thành phố --",
+                                new
+                                {
+                                    @class = "form-control shadow-none px-3 py-2",
+                                    id = "province",
+                                    required = "required"
+                                }
+                            )
+                            @Html.ValidationMessageFor(model => model.CustomerProfile.City, "", new { @class = "text-danger small" })
                         </div>
 
-                        <div class="col-md-6">
-                            <label for="City" class="form-label fs-6 text-dark fw-semibold">
-                                Tỉnh/Thành phố
+                        <div class="col-md-6 mb-3">
+                            <label for="District" class="form-label fs-6 text-dark fw-semibold">
+                                Quận/Huyện <span class="text-danger">*</span>
                             </label>
-                            @Html.TextBoxFor(model => model.City, new { 
-                                @class = "form-control shadow-none px-3 py-2", 
-                                placeholder = "TP. Hồ Chí Minh, Hà Nội..."
-                            })
-                            @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger small" })
+                            @Html.DropDownListFor(
+                                model => model.CustomerProfile.District,
+                                new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+                                "-- Chọn quận/huyện --",
+                                new
+                                {
+                                    @class = "form-control shadow-none px-3 py-2",
+                                    id = "district",
+                                    required = "required"
+                                }
+                            )
+                            @Html.ValidationMessageFor(model => model.CustomerProfile.District, "", new { @class = "text-danger small" })
                         </div>
                     </div>
 
@@ -84,12 +99,29 @@
                         <label for="Address" class="form-label fs-6 text-dark fw-semibold">
                             Địa chỉ
                         </label>
-                        @Html.TextBoxFor(model => model.Address, new { 
-                            @class = "form-control shadow-none px-3 py-2", 
-                            placeholder = "Số nhà, tên đường"
-                        })
-                        @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger small" })
+                            @Html.TextBoxFor(model => model.CustomerProfile.Address, new { 
+                                @class = "form-control shadow-none px-3 py-2", 
+                                placeholder = "Số nhà, tên đường"
+                            })
+                            @Html.ValidationMessageFor(model => model.CustomerProfile.Address, "", new { @class = "text-danger small" })
                     </div>
+
+                    <!-- Phương thức thanh toán -->
+                    <div class="mb-4">
+                        <label class="form-label fs-6 text-dark fw-semibold mb-3">
+                            Phương thức thanh toán
+                        </label>
+                        <div class="payment-methods">
+                            <div class="form-check mb-2">
+                                @Html.RadioButtonFor(model => model.PaymentMethod, "COD", new { @class = "form-check-input", id = "paymentCOD", @checked = "checked", @readonly = "readonly" })
+                                <label class="form-check-label" for="paymentCOD">
+                                    <strong>COD</strong> - Thanh toán khi nhận hàng
+                                </label>
+                            </div>
+                        </div>
+                        @Html.HiddenFor(model => model.PaymentMethod)
+                    </div>
+
                     <button type="submit" name="submit" class="btn btn-primary btn-rounded-none  w-100 mb-1">Xác nhận</button>
                     <a href="@Url.Action("Index")" class="btn btn-dark btn-rounded-none  w-100">Trở lại</a>
                 }
@@ -98,5 +130,67 @@
     </div>
 </div>
 
-    
-}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>
+    $(document).ready(function () {
+        loadProvinces();
+        
+        // Load saved values if exists
+        var savedCity = '@(Model?.CustomerProfile?.City ?? "")';
+        var savedDistrict = '@(Model?.CustomerProfile?.District ?? "")';
+        
+        if (savedCity) {
+            setTimeout(function() {
+                $("#province").val(savedCity).trigger('change');
+                if (savedDistrict) {
+                    setTimeout(function() {
+                        $("#district").val(savedDistrict);
+                    }, 500);
+                }
+            }, 500);
+        }
+    });
+
+    function loadProvinces() {
+        $.get("https://provinces.open-api.vn/api/?depth=1", function (res) {
+            $("#province").html('<option value="">-- Chọn tỉnh/thành phố --</option>');
+            $.each(res, function (i, item) {
+                $("#province").append(
+                    `<option value="${item.name}">${item.name}</option>`
+                );
+            });
+            
+            // Set saved value if exists
+            var savedCity = '@(Model?.CustomerProfile?.City ?? "")';
+            if (savedCity) {
+                $("#province").val(savedCity);
+            }
+        });
+    }
+
+    $("#province").on("change", function () {
+        let provinceName = $(this).val();
+        $("#district").html('<option value="">-- Chọn quận/huyện --</option>');
+
+        if (!provinceName) return;
+
+        $.get("https://provinces.open-api.vn/api/?depth=1", function (res) {
+            let province = res.find(p => p.name === provinceName);
+            if (!province) return;
+
+            $.get(`https://provinces.open-api.vn/api/p/${province.code}?depth=2`, function (res) {
+                $.each(res.districts, function (i, item) {
+                    $("#district").append(
+                        `<option value="${item.name}">${item.name}</option>`
+                    );
+                });
+                
+                // Set saved value if exists
+                var savedDistrict = '@(Model?.CustomerProfile?.District ?? "")';
+                if (savedDistrict) {
+                    $("#district").val(savedDistrict);
+                }
+            });
+        });
+    });
+</script>

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System.Web.Mvc;
 using FashionStore.Models;
 using FashionStore.ViewModels;
+using FashionStore.Services;
 
 namespace FashionStore.Areas.Admin.Controllers
 {
@@ -103,45 +105,157 @@ namespace FashionStore.Areas.Admin.Controllers
         {
             ViewBag.Status = new[]
             {
-                new { StatusName = "Chờ xác nhận", StatusValue = "Pending" },
-                new { StatusName = "Đang xử lý",   StatusValue = "Processing" },
-                new { StatusName = "Đã giao hàng", StatusValue = "Shipped" },
-                new { StatusName = "Hoàn thành",   StatusValue = "Completed" },
-                new { StatusName = "Đã hủy",       StatusValue = "Cancelled" }
+                new { StatusName = "Chờ xác nhận", StatusValue = OrderStatus.Pending.ToString() },
+                new { StatusName = "Đang xử lý",   StatusValue = OrderStatus.Processing.ToString() },
+                new { StatusName = "Đã giao hàng", StatusValue = OrderStatus.Shipped.ToString() },
+                new { StatusName = "Hoàn thành",   StatusValue = OrderStatus.Completed.ToString() },
+                new { StatusName = "Đã hủy",       StatusValue = OrderStatus.Cancelled.ToString() }
             };
         }
 
-        public ActionResult EditStatus(int id, string status)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult EditStatus(int id, string status, string note = null)
         {
-            var order = _entities.Orders.Find(id);
-            if (order != null)
+            var order = _entities.Orders
+                .Include(o => o.OrderDetails)
+                .FirstOrDefault(o => o.OrderID == id);
+
+            if (order == null)
             {
-                order.Status = status;
-                _entities.SaveChanges();
+                TempData["Error"] = "Đơn hàng không tồn tại.";
+                return RedirectToAction("Index");
             }
 
-            return RedirectToAction("Index");
+            var orderService = new OrderService(_entities);
+            var oldStatus = order.Status;
+
+            // Validate status transition
+            if (!orderService.CanChangeStatus(oldStatus, status))
+            {
+                TempData["Error"] = $"Không thể chuyển đổi trạng thái từ '{GetStatusDisplayName(oldStatus)}' sang '{GetStatusDisplayName(status)}'.";
+                return RedirectToAction("Details", new { id });
+            }
+
+            using (var transaction = _entities.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Update status
+                    order.Status = status;
+
+                    // Handle business logic based on new status
+                    if (status == OrderStatus.Cancelled.ToString())
+                    {
+                        orderService.OnOrderCancelled(order);
+                    }
+                    else if (status == OrderStatus.Completed.ToString())
+                    {
+                        orderService.OnOrderCompleted(order);
+                    }
+
+                    _entities.SaveChanges();
+
+                    // Log status change
+                    var changedBy = User?.Identity?.Name ?? "Admin";
+                    orderService.LogStatusChange(id, oldStatus, status, changedBy, note);
+                    _entities.SaveChanges();
+
+                    transaction.Commit();
+
+                    TempData["Success"] = "Cập nhật trạng thái đơn hàng thành công.";
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    TempData["Error"] = $"Có lỗi xảy ra: {ex.Message}";
+                }
+            }
+
+            return RedirectToAction("Details", new { id });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult EditManyStatus(string id, string status)
         {
             if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(status))
             {
-                return HttpNotFound();
+                TempData["Error"] = "Dữ liệu không hợp lệ.";
+                return RedirectToAction("Index");
             }
 
             var ids = id.Split(',').Select(int.Parse).ToList();
+            var orders = _entities.Orders
+                .Include(o => o.OrderDetails)
+                .Where(o => ids.Contains(o.OrderID))
+                .ToList();
 
-            List<Order> orders = _entities.Orders
-                .Where(o => ids.Contains(o.OrderID)).ToList();
+            var orderService = new OrderService(_entities);
+            var changedBy = User?.Identity?.Name ?? "Admin";
+            var successCount = 0;
+            var failCount = 0;
 
-            foreach (var item in orders)
+            foreach (var order in orders)
             {
-                item.Status = status;
+                var oldStatus = order.Status;
+
+                if (!orderService.CanChangeStatus(oldStatus, status))
+                {
+                    failCount++;
+                    continue;
+                }
+
+                using (var transaction = _entities.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        order.Status = status;
+
+                        if (status == OrderStatus.Cancelled.ToString())
+                        {
+                            orderService.OnOrderCancelled(order);
+                        }
+                        else if (status == OrderStatus.Completed.ToString())
+                        {
+                            orderService.OnOrderCompleted(order);
+                        }
+
+                        _entities.SaveChanges();
+
+                        orderService.LogStatusChange(order.OrderID, oldStatus, status, changedBy);
+                        _entities.SaveChanges();
+
+                        transaction.Commit();
+                        successCount++;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        failCount++;
+                    }
+                }
             }
 
-            _entities.SaveChanges();
+            if (successCount > 0)
+                TempData["Success"] = $"Đã cập nhật {successCount} đơn hàng.";
+            if (failCount > 0)
+                TempData["Error"] = $"Không thể cập nhật {failCount} đơn hàng.";
+
             return RedirectToAction("Index");
+        }
+
+        private string GetStatusDisplayName(string status)
+        {
+            switch (status)
+            {
+                case "Pending": return "Chờ xác nhận";
+                case "Processing": return "Đang xử lý";
+                case "Shipped": return "Đã giao hàng";
+                case "Completed": return "Hoàn thành";
+                case "Cancelled": return "Đã hủy";
+                default: return status;
+            }
         }
 
         protected override void Dispose(bool disposing)

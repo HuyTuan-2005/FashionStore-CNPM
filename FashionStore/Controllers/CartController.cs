@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using FashionStore.Models;
 using FashionStore.ViewModels;
+using FashionStore.Services;
 
 namespace FashionStore.Controllers
 {
@@ -288,7 +289,7 @@ namespace FashionStore.Controllers
         }
 
         [HttpGet]
-        [CustomAuthorize] // ← CHỈ CHECKOUT MỚI CẦN LOGIN
+        [CustomAuthorize]
         public ActionResult Checkout()
         {
             var cart = GetOrCreateCart();
@@ -304,13 +305,19 @@ namespace FashionStore.Controllers
             var cus = Session["Customer"] as Customer;
             var profile = db.CustomerProfiles.Find(cus.CustomerID);
 
-            return View(profile);
+            var viewModel = new CheckoutViewModel
+            {
+                CustomerProfile = profile ?? new CustomerProfile { ProfileID = cus.CustomerID },
+                PaymentMethod = PaymentMethod.COD.ToString() // Default value
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [CustomAuthorize] // ← CHỈ CHECKOUT MỚI CẦN LOGIN
-        public ActionResult Checkout(CustomerProfile model)
+        [CustomAuthorize]
+        public ActionResult Checkout(CheckoutViewModel viewModel)
         {
             var cart = GetOrCreateCart();
             var cartItems = db.CartItems
@@ -325,50 +332,91 @@ namespace FashionStore.Controllers
             }
 
             var cus = Session["Customer"] as Customer;
+            var orderService = new OrderService(db);
 
-            var order = new Order
+            // Validate and get PaymentMethod from user selection
+            var paymentMethod = ValidateAndGetPaymentMethod(viewModel.PaymentMethod);
+
+            using (var transaction = db.Database.BeginTransaction())
             {
-                PaymentMethod = "COD",
-                ShippingAddress = string.Join(", ", model.Address, model.District, model.City),
-                OrderDate = DateTime.Now,
-                Status = "Pending",
-                CustomerID = cus.CustomerID,
-                PhoneNumber = model.PhoneNumber,
-                FullName = model.FullName
-            };
-
-            foreach (var cartItem in cartItems)
-            {
-                var variant = cartItem.ProductVariant;
-
-                if (cartItem.Quantity > variant.Stock)
+                try
                 {
-                    TempData["Error"] = $"Sản phẩm {variant.Product.ProductName} không đủ số lượng.";
+                    // Validate stock for all items before any changes
+                    orderService.ValidateStockForOrder(cartItems);
+
+                    var profile = viewModel.CustomerProfile ?? new CustomerProfile();
+
+                    // Create order
+                    var order = new Order
+                    {
+                        PaymentMethod = paymentMethod,
+                        ShippingAddress = string.Join(", ", profile.Address, profile.District, profile.City),
+                        OrderDate = DateTime.Now,
+                        Status = OrderStatus.Pending.ToString(),
+                        CustomerID = cus.CustomerID,
+                        PhoneNumber = profile.PhoneNumber,
+                        FullName = profile.FullName
+                    };
+
+                    // Create order details and calculate total
+                    foreach (var cartItem in cartItems)
+                    {
+                        var variant = cartItem.ProductVariant;
+                        var discountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0;
+
+                        order.OrderDetails.Add(new OrderDetail
+                        {
+                            Price = variant.Product.BasePrice,
+                            VariantID = variant.VariantID,
+                            Quantity = cartItem.Quantity,
+                            DiscountPercent = discountPercent
+                        });
+                    }
+
+                    order.TotalAmount = order.OrderDetails.Sum(x => 
+                        (x.Price * (1 - (x.DiscountPercent ?? 0) / 100)) * x.Quantity);
+
+                    // Deduct stock (atomic operation within transaction)
+                    orderService.DeductStock(cartItems);
+
+                    // Save order
+                    db.Orders.Add(order);
+                    db.SaveChanges();
+
+                    // Remove cart items
+                    db.CartItems.RemoveRange(cartItems);
+                    db.SaveChanges();
+
+                    // Log initial status
+                    orderService.LogStatusChange(
+                        order.OrderID,
+                        null,
+                        OrderStatus.Pending.ToString(),
+                        cus.UserName ?? "Customer",
+                        "Order created"
+                    );
+                    db.SaveChanges();
+
+                    // Commit transaction
+                    transaction.Commit();
+
+                    Session["Cart"] = null;
+                    TempData["Success"] = "Đặt hàng thành công.";
+                    return RedirectToAction("Index", "Order");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    transaction.Rollback();
+                    TempData["Error"] = ex.Message;
                     return RedirectToAction("Index", "Cart");
                 }
-
-                order.OrderDetails.Add(new OrderDetail
+                catch (Exception)
                 {
-                    Price = variant.Product.BasePrice,
-                    VariantID = variant.VariantID,
-                    Quantity = cartItem.Quantity,
-                    DiscountPercent = DateTime.Now.Day == DateTime.Now.Month ? 30 : 0
-                });
-
-                variant.Stock -= cartItem.Quantity;
+                    transaction.Rollback();
+                    TempData["Error"] = "Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.";
+                    return RedirectToAction("Index", "Cart");
+                }
             }
-
-            order.TotalAmount = order.OrderDetails.Sum(x => (x.Price * (1 - x.DiscountPercent.Value / 100)) * x.Quantity);
-
-            db.Orders.Add(order);
-
-            // XÓA GIỎ HÀNG SAU KHI ĐẶT HÀNG THÀNH CÔNG
-            db.CartItems.RemoveRange(cartItems);
-            db.SaveChanges();
-
-            Session["Cart"] = null;
-            TempData["Success"] = "Đặt hàng thành công.";
-            return RedirectToAction("Index", "Order");
         }
 
         // ============================================
@@ -383,6 +431,16 @@ namespace FashionStore.Controllers
 
             Session["Cart"] = null;
             return RedirectToAction("Index");
+        }
+
+        // ============================================
+        // HELPER: VALIDATE PAYMENT METHOD
+        // Chỉ hỗ trợ COD - các phương thức khác đã bị khóa
+        // ============================================
+        private string ValidateAndGetPaymentMethod(string paymentMethod)
+        {
+            // Chỉ chấp nhận COD, bỏ qua tất cả các phương thức khác
+            return PaymentMethod.COD.ToString();
         }
 
         // ============================================

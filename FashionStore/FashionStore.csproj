@@ -147,10 +147,14 @@
     <Compile Include="Models\CustomerProfile.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\FashionStore.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>FashionStore.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\FashionStore.Context.partial.cs">
+      <DependentUpon>FashionStore.Context.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\FashionStore.cs">
       <AutoGen>True</AutoGen>
@@ -165,9 +169,13 @@
     <Compile Include="Models\Order.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Order.partial.cs">
+      <DependentUpon>Order.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\OrderDetail.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\OrderStatusHistory.cs" />
     <Compile Include="Models\Product.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
@@ -190,7 +198,9 @@
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\OrderService.cs" />
     <Compile Include="ViewModels\CartItemViewModel.cs" />
+    <Compile Include="ViewModels\CheckoutViewModel.cs" />
     <Compile Include="ViewModels\OrderDetailViewModel.cs" />
     <Compile Include="ViewModels\ProductCreateViewModel.cs" />
     <Compile Include="ViewModels\ProductDetailsViewModel.cs" />
