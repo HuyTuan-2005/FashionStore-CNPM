@@ -178,6 +178,38 @@ CREATE TABLE OrderDetails
     DiscountPercent DECIMAL(5, 2) DEFAULT 0                                -- Lưu % giảm giá tại thời điểm mua
 );
 
+
+-- ============================================
+-- 9. GIỎ HÀNG (SHOPPING CART)
+-- LÝ DO CẦN THIẾT: 
+-- - Lưu trữ giỏ hàng của user chưa checkout
+-- - Hỗ trợ "save for later", phục hồi giỏ hàng khi user quay lại
+-- - Tách biệt giỏ hàng (tạm thời) vs đơn hàng (đã thanh toán)
+-- ============================================
+CREATE TABLE Carts (
+                       CartID INT PRIMARY KEY IDENTITY(1,1),
+                       CustomerID INT NOT NULL FOREIGN KEY REFERENCES Customers(CustomerID) ON DELETE CASCADE,
+                       CartToken   VARCHAR(64) NOT NULL UNIQUE,   -- lưu ở cookie/Session cho khách chưa đăng nhập
+                       CreatedAt DATETIME DEFAULT GETDATE(),
+                       UpdatedAt DATETIME DEFAULT GETDATE(),
+                       CONSTRAINT UQ_Customer_Cart UNIQUE(CustomerID) -- Mỗi khách hàng chỉ có 1 giỏ hàng active
+);
+
+-- 9. Đơn HÀNG (ORDERS)
+-- ============================================
+-- 10. CHI TIẾT GIỎ HÀNG
+-- ============================================
+CREATE TABLE CartItems (
+                           CartItemID INT PRIMARY KEY IDENTITY(1,1),
+                           CartID INT NOT NULL FOREIGN KEY REFERENCES Carts(CartID) ON DELETE CASCADE,
+                           VariantID INT NOT NULL FOREIGN KEY REFERENCES ProductVariants(VariantID), -- Lưu variant cụ thể (màu + size)
+                           Quantity INT NOT NULL CHECK (Quantity > 0),
+                           CONSTRAINT UQ_Cart_Variant UNIQUE(CartID, VariantID) -- Mỗi variant chỉ xuất hiện 1 lần trong giỏ
+);
+
+
+
+
 DELETE FROM OrderDetails;
 DELETE FROM Orders;
 DELETE FROM ProductImages;
@@ -922,6 +954,76 @@ INSERT INTO OrderDetails (OrderID, VariantID, Quantity, Price, DiscountPercent) 
                                                                                     (50, 42, 1, 599000, 15), -- Áo khoác dù đen M
                                                                                     (50, 68, 1, 459000, 0);  -- Áo hoodie xám L
 
+-- ============================================
+-- 9b. CARTS (30 bản ghi) 
+-- Giả sử cart cho CustomerID 1..30 với CartToken khác nhau
+-- ============================================
+INSERT INTO Carts (CustomerID, CartToken, CreatedAt, UpdatedAt) VALUES
+                                                                    (1,  'CART-0001-7f0b4f6b8a', GETDATE(), GETDATE()),
+                                                                    (2,  'CART-0002-a9183cc1d2', GETDATE(), GETDATE()),
+                                                                    (3,  'CART-0003-13f8b92e77', GETDATE(), GETDATE()),
+                                                                    (4,  'CART-0004-5b0d2ef091', GETDATE(), GETDATE()),
+                                                                    (5,  'CART-0005-8c71a23bde', GETDATE(), GETDATE()),
+                                                                    (6,  'CART-0006-3a9d6f21c4', GETDATE(), GETDATE()),
+                                                                    (7,  'CART-0007-9b2f1e34a7', GETDATE(), GETDATE()),
+                                                                    (8,  'CART-0008-4e1a7c93bd', GETDATE(), GETDATE()),
+                                                                    (9,  'CART-0009-2f8b6e71ac', GETDATE(), GETDATE()),
+                                                                    (10, 'CART-0010-d3a7b9c18e', GETDATE(), GETDATE()),
+                                                                    (11, 'CART-0011-71c8de934a', GETDATE(), GETDATE()),
+                                                                    (12, 'CART-0012-5a3e9b1c7d', GETDATE(), GETDATE()),
+                                                                    (13, 'CART-0013-8e7a1d3c5b', GETDATE(), GETDATE()),
+                                                                    (14, 'CART-0014-19bc7e5ad3', GETDATE(), GETDATE()),
+                                                                    (15, 'CART-0015-6d7e1a9c3b', GETDATE(), GETDATE()),
+                                                                    (16, 'CART-0016-3c5b7e9a1d', GETDATE(), GETDATE()),
+                                                                    (17, 'CART-0017-9a1d3c5b7e', GETDATE(), GETDATE()),
+                                                                    (18, 'CART-0018-7e9a1d3c5b', GETDATE(), GETDATE()),
+                                                                    (19, 'CART-0019-1d3c5b7e9a', GETDATE(), GETDATE()),
+                                                                    (20, 'CART-0020-b7e9a1d3c5', GETDATE(), GETDATE()),
+                                                                    (21, 'CART-0021-e9a1d3c5b7', GETDATE(), GETDATE()),
+                                                                    (22, 'CART-0022-a1d3c5b7e9', GETDATE(), GETDATE()),
+                                                                    (23, 'CART-0023-d3c5b7e9a1', GETDATE(), GETDATE()),
+                                                                    (24, 'CART-0024-3c5b7e9a1d', GETDATE(), GETDATE()),
+                                                                    (25, 'CART-0025-5b7e9a1d3c', GETDATE(), GETDATE()),
+                                                                    (26, 'CART-0026-7e9a1d3c5b', GETDATE(), GETDATE()),
+                                                                    (27, 'CART-0027-9a1d3c5b7e', GETDATE(), GETDATE()),
+                                                                    (28, 'CART-0028-1d3c5b7e9a', GETDATE(), GETDATE()),
+                                                                    (29, 'CART-0029-c5b7e9a1d3', GETDATE(), GETDATE()),
+                                                                    (30, 'CART-0030-b1a2c3d4e5', GETDATE(), GETDATE());
+
+-- ============================================
+-- 10. CART ITEMS (mỗi cart 2-3 dòng, dùng VariantID từ 1..100)
+-- ============================================
+INSERT INTO CartItems (CartID, VariantID, Quantity) VALUES
+                                                        (1,  1, 2), (1,  2, 1),
+                                                        (2,  3, 1), (2,  5, 2),
+                                                        (3,  6, 1), (3,  9, 1),
+                                                        (4, 10, 3), (4, 12, 1),
+                                                        (5, 13, 1), (5, 15, 2),
+                                                        (6, 18, 1), (6, 19, 1),
+                                                        (7, 20, 1), (7, 22, 2),
+                                                        (8, 24, 1), (8, 26, 1),
+                                                        (9, 28, 2), (9, 29, 1),
+                                                        (10, 30, 1), (10, 31, 1),
+                                                        (11, 33, 2), (11, 35, 1),
+                                                        (12, 36, 1), (12, 38, 1),
+                                                        (13, 40, 2), (13, 41, 1),
+                                                        (14, 43, 1), (14, 44, 1),
+                                                        (15, 45, 2), (15, 47, 1),
+                                                        (16, 48, 1), (16, 50, 2),
+                                                        (17, 52, 1), (17, 53, 1),
+                                                        (18, 55, 2), (18, 56, 1),
+                                                        (19, 58, 1), (19, 60, 1),
+                                                        (20, 61, 2), (20, 62, 1),
+                                                        (21, 64, 1), (21, 66, 1),
+                                                        (22, 67, 2), (22, 68, 1),
+                                                        (23, 70, 1), (23, 71, 1),
+                                                        (24, 72, 1), (24, 73, 2),
+                                                        (25, 74, 1), (25, 75, 1),
+                                                        (26, 76, 2), (26, 77, 1),
+                                                        (27, 78, 1), (27, 79, 1),
+                                                        (28, 80, 2), (28, 81, 1),
+                                                        (29, 82, 1), (29, 83, 1),
+                                                        (30, 84, 2), (30, 85, 1);
 update [ProductImages]
 set ImageUrl = 'post-item2.jpg'
 

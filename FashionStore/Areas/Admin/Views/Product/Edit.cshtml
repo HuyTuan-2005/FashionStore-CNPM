@@ -61,7 +61,7 @@
                         </div>
                         <div class="card-content">
                             <div class="form-group">
-                                <label class="form-label">Tên sản phẩm *</label>
+                                <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
                                 <input type="text" name="ProductName" class="form-control" required=""
                                        placeholder="Nhập tên sản phẩm" value="@Model.ProductName">
                             </div>
@@ -83,7 +83,7 @@
                         <div class="card-content">
                             <div class="grid grid-cols-2">
                                 <div class="form-group">
-                                    <label class="form-label">Giá bán *</label>
+                                    <label class="form-label">Giá bán <span class="text-danger">*</span></label>
                                     <input value="@Convert.ToInt32(Model.BasePrice)" placeholder="Nhập giá bán"
                                            type="number" name="BasePrice"
                                            class="form-control" required="" min="0">
@@ -227,7 +227,7 @@
                         </div>
                         <div class="card-content">
                             <div class="form-group m-0">
-                                <label class="form-label">Ảnh chính *</label>
+                                <label class="form-label">Ảnh chính <span class="text-danger">*</span></label>
                                 <div
                                     style="border: 2px dashed var(--border); border-radius: var(--radius); padding: 0.7rem; text-align: center; cursor: pointer;"
                                     onclick="document.getElementById('mainImage').click()">
@@ -292,7 +292,7 @@
                         </div>
                         <div class="card-content">
                             <div class="form-group">
-                                <label class="form-label">Trạng thái sản phẩm *</label>
+                                <label class="form-label">Trạng thái sản phẩm <span class="text-danger">*</span></label>
                                 <select name="IsActive" class="form-control" required="">
                                     @if (Model.IsActive != null && Model.IsActive.Value)
                                     {
@@ -318,7 +318,7 @@
                         </div>
                         <div class="card-content">
                             <div class="form-group">
-                                <label class="form-label">Danh mục *</label>
+                                <label class="form-label">Danh mục <span class="text-danger">*</span></label>
                                 <select name="CategoryID" class="form-control" required="">
                                     @foreach (Category i in ViewBag.Categories)
                                     {
