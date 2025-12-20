@@ -253,27 +253,6 @@
     <Content Include="Content\css\order.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\toast.css" />
-    <Content Include="Content\img\banner-image1.jpg" />
-    <Content Include="Content\img\error-image.jpg" />
-    <Content Include="Content\img\products\post-item1.jpg" />
-    <Content Include="Content\img\products\post-item2.jpg" />
-    <Content Include="Content\img\products\post-item4.jpg" />
-    <Content Include="Content\img\products\post-item5.jpg" />
-    <Content Include="Content\img\products\post-item6.jpg" />
-    <Content Include="Content\img\products\post-item7.jpg" />
-    <Content Include="Content\img\products\product-item001.jpg" />
-    <Content Include="Content\img\products\product-item002.jpg" />
-    <Content Include="Content\img\products\product-item003.jpg" />
-    <Content Include="Content\img\products\product-item004.jpg" />
-    <Content Include="Content\img\products\product-item005.jpg" />
-    <Content Include="Content\img\products\product-item10.jpg" />
-    <Content Include="Content\img\products\product-item11.jpg" />
-    <Content Include="Content\img\products\product-item12.jpg" />
-    <Content Include="Content\img\products\product-item2.jpg" />
-    <Content Include="Content\img\products\product-item6.jpg" />
-    <Content Include="Content\img\products\product-item7.jpg" />
-    <Content Include="Content\img\products\product-item8.jpg" />
-    <Content Include="Content\img\products\product-item9.jpg" />
     <Content Include="Content\js\Admin\dashboard.js" />
     <Content Include="Content\js\Admin\order-admin.js" />
     <Content Include="Content\js\Admin\product-admin.js" />
@@ -364,6 +343,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
+    <Folder Include="Content\img\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
