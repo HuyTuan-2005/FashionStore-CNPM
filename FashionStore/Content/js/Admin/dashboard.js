@@ -64,19 +64,23 @@ function toggleSidebar() {
 
 // Modal functions
 function openModal(id, modalId) {
-  const modal = document.getElementById(modalId);
-  if (modal) {
-    modal.classList.add('show');
-    
-    modal.setAttribute('data-id', id);
-    const title = modal.querySelector('h3');
-    if(!title.innerText.includes(id))
-    {
-        title.innerText += ` #${id}`;
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.add('show');
+
+        modal.setAttribute('data-id', id);
+        const title = modal.querySelector('h3');
+
+        // Lưu tiêu đề gốc nếu chưa có
+        if (!title.dataset.originalText) {
+            title.dataset.originalText = title.innerText;
+        }
+
+        // Đặt lại tiêu đề với ID mới
+        title.innerText = `${title.dataset.originalText} #${id}`;
+
+        document.body.style.overflow = 'hidden';
     }
-    
-    document.body.style.overflow = 'hidden';
-  }
 }
 
 function closeModal(modalId) {
