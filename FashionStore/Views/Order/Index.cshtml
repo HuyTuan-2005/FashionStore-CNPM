@@ -1,4 +1,5 @@
 ﻿@model List<FashionStore.Models.Order>
+@using FashionStore.Models
 @{
     ViewBag.Title = "Đơn hàng của tôi";
     
@@ -266,13 +267,15 @@
 
                             <!-- Action Buttons -->
                             <div class="d-flex gap-2 mt-4">
-                                @if (order.Status == "Pending")
+                                @if (order.Status == OrderStatus.Pending.ToString() || order.Status == OrderStatus.Processing.ToString())
                                 {
-                                    <a href="@Url.Action("Cancel", "Order", new { id = order.OrderID })"
-                                       class="btn btn-danger"
-                                       onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
-                                        <i class="bi bi-x-circle me-2"></i>Hủy đơn hàng
-                                    </a>
+                                    using (Html.BeginForm("Cancel", "Order", new { id = order.OrderID }, FormMethod.Post, new { @class = "d-inline", onsubmit = "return confirm('Bạn có chắc muốn hủy đơn hàng này?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-x-circle me-2"></i>Hủy đơn hàng
+                                        </button>
+                                    }
                                 }
                                 @if (order.Status == "Delivered")
                                 {
