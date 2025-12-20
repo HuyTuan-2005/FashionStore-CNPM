@@ -94,68 +94,66 @@
     <div id="preloader">
         <span class="loader"></span>
     </div>
+    <header id="header" class="site-header text-black">
+        <nav id="header-nav" class="navbar navbar-expand-lg px-md-3 py-md-4 py-3">
+            <div class="container">
 
-<<<<<<< HEAD
-<header id="header" class="site-header text-black">
-    <nav id="header-nav" class="navbar navbar-expand-lg px-md-3 py-md-4 py-3">
-        <div class="container">
-            <a class="navbar-brand text-uppercase m-0 p-0 fs-2" style="font-family: var(--heading-font)"
-               href="@Url.Action("Index", "Home")">
-                URBAN
-            </a>
-            <button class="navbar-toggler d-flex d-lg-none order-3 p-0" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <svg class="navbar-icon" width="50" height="50">
-                    <use xlink:href="#navbar-icon"></use>
-                </svg>
-            </button>
-            <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
-                <div class="offcanvas-header px-4 pb-0">
-                    <a class="navbar-brand text-uppercase m-0 p-0 fs-2" style="font-family: var(--heading-font)"
-                       href="@Url.Action("Index", "Product")">
-                        URBAN
-                    </a>
-                    <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas"
-                            aria-label="Close" data-bs-target="#bdNavbar"></button>
-                </div>
-                <div class="offcanvas-body">
-                    <ul id="navbar"
-                        class="navbar-nav text-capitalize justify-content-end align-items-center flex-grow-1 pe-3">
-                    
+                <button class="navbar-toggler d-flex d-lg-none order-3 p-0" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#bdNavbar" aria-controls="bdNavbar" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <svg class="navbar-icon" width="50" height="50">
+                        <use xlink:href="#navbar-icon"></use>
+                    </svg>
+                </button>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="bdNavbar" aria-labelledby="bdNavbarOffcanvasLabel">
+                    <div class="offcanvas-header px-4 pb-0">
+                        <a class="navbar-brand text-uppercase m-0 p-0 fs-2" style="font-family: var(--heading-font)"
+                           href="@Url.Action("Index", "Product")">
+                            URBAN
+                        </a>
+                        <button type="button" class="btn-close btn-close-black" data-bs-dismiss="offcanvas"
+                                aria-label="Close" data-bs-target="#bdNavbar"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul id="navbar"
+                            class="navbar-nav text-capitalize justify-content-end align-items-center flex-grow-1 pe-3">
 
-                        @using FashionStore.Models
-                        @{
-                            // Ép kiểu Session["Customer"] về Model Customer
-                            var currentCus = Session["Customer"] as FashionStore.Models.Customer;
-                        }
 
-                        @if (currentCus != null)
-                        {
-                            @* Nếu RoleID là 3: Hiện Lịch sử mua hàng *@
-                            if (currentCus.RoleID == 3 )
+                            @using FashionStore.Models
+                            @{
+                                // Ép kiểu Session["Customer"] về Model Customer
+                                var currentCus = Session["Customer"] as FashionStore.Models.Customer;
+                            }
+
+                            @if (currentCus != null)
                             {
-                                <li class="nav-item">
-                                    <a class="nav-link text-primary fw-bold me-4" href="@Url.Action("Index", "ThongKe")">
-                                        <i class="bi bi-cart-check"></i> Lịch sử mua hàng của tôi
-                                    </a>
-                                </li>
+                                @* Nếu RoleID là 3: Hiện Lịch sử mua hàng *@
+                                if (currentCus.RoleID == 3)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-primary fw-bold me-4" href="@Url.Action("Index", "ThongKe")">
+                                            <i class="bi bi-cart-check"></i> Lịch sử mua hàng của tôi
+                                        </a>
+                                    </li>
+                                }
+                                @* Nếu RoleID là 1 hoặc 2: Hiện Đơn hàng của tôi *@
+                                else if (currentCus.RoleID == 1 || currentCus.RoleID == 2)
+                                {
+                                    <li class="nav-item">
+                                        <a class="nav-link text-danger fw-bold me-4" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                                            <i class="bi bi-graph-up-arrow"></i> 🛒 Đơn hàng của tôi
+                                        </a>
+                                    </li>
+                                }
                             }
-                            @* Nếu RoleID là 1 hoặc 2: Hiện Đơn hàng của tôi *@
-                        else if (currentCus.RoleID == 1 || currentCus.RoleID == 2)
-                        {
-                                <li class="nav-item">
-                                    <a class="nav-link text-danger fw-bold me-4" href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
-                                        <i class="bi bi-graph-up-arrow"></i> 🛒 Đơn hàng của tôi
-                                    </a>
-                                </li>
-                            }
-                        }
 
-                        <li class="nav-item">
-                            <a class="nav-link me-4 active" href="@Url.Action("Index", "Product")">Sản phẩm</a>
-                        </li>
-=======
+       
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
     <header id="header" class="site-header text-black">
         <nav id="header-nav" class="navbar navbar-expand-lg px-md-3 py-md-4 py-3">
             <div class="container">
@@ -185,8 +183,6 @@
                             <li class="nav-item">
                                 <a class="nav-link me-4 active" href="@Url.Action("Index", "Product")">Sản phẩm</a>
                             </li>
->>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
-
                             @Html.Action("DanhMuc", "Product")
 
                             <li class="nav-item">

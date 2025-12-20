@@ -110,11 +110,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
-<<<<<<< HEAD
     <Compile Include="Areas\Admin\Controllers\BackupController.cs" />
-=======
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
->>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
@@ -159,9 +156,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FashionStore.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\FashionStore.Context.partial.cs">
-      <DependentUpon>FashionStore.Context.cs</DependentUpon>
-    </Compile>
     <Compile Include="Models\FashionStore.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -174,9 +168,6 @@
     </Compile>
     <Compile Include="Models\Order.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\Order.partial.cs">
-      <DependentUpon>Order.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\OrderDetail.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
@@ -197,6 +188,9 @@
     <Compile Include="Models\Size.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\sp_getAllUser_Result.cs">
+      <DependentUpon>FashionStore.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\sp_helpdiagramdefinition_Result.cs">
       <DependentUpon>FashionStore.tt</DependentUpon>
     </Compile>
@@ -212,9 +206,6 @@
     <Compile Include="Services\ShippingService.cs" />
     <Compile Include="Attributes\VietnamesePhoneAttribute.cs" />
     <Compile Include="Attributes\ValidFullNameAttribute.cs" />
-    <Compile Include="Models\CustomerProfile.partial.cs">
-      <DependentUpon>CustomerProfile.cs</DependentUpon>
-    </Compile>
     <Compile Include="ViewModels\CartItemViewModel.cs" />
     <Compile Include="ViewModels\CheckoutViewModel.cs" />
     <Compile Include="ViewModels\OrderDetailViewModel.cs" />
@@ -270,6 +261,27 @@
     <Content Include="Content\css\order.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\css\toast.css" />
+    <Content Include="Content\img\banner-image1.jpg" />
+    <Content Include="Content\img\error-image.jpg" />
+    <Content Include="Content\img\products\post-item1.jpg" />
+    <Content Include="Content\img\products\post-item2.jpg" />
+    <Content Include="Content\img\products\post-item4.jpg" />
+    <Content Include="Content\img\products\post-item5.jpg" />
+    <Content Include="Content\img\products\post-item6.jpg" />
+    <Content Include="Content\img\products\post-item7.jpg" />
+    <Content Include="Content\img\products\product-item001.jpg" />
+    <Content Include="Content\img\products\product-item002.jpg" />
+    <Content Include="Content\img\products\product-item003.jpg" />
+    <Content Include="Content\img\products\product-item004.jpg" />
+    <Content Include="Content\img\products\product-item005.jpg" />
+    <Content Include="Content\img\products\product-item10.jpg" />
+    <Content Include="Content\img\products\product-item11.jpg" />
+    <Content Include="Content\img\products\product-item12.jpg" />
+    <Content Include="Content\img\products\product-item2.jpg" />
+    <Content Include="Content\img\products\product-item6.jpg" />
+    <Content Include="Content\img\products\product-item7.jpg" />
+    <Content Include="Content\img\products\product-item8.jpg" />
+    <Content Include="Content\img\products\product-item9.jpg" />
     <Content Include="Content\js\Admin\category-admin.js" />
     <Content Include="Content\js\Admin\dashboard.js" />
     <Content Include="Content\js\Admin\order-admin.js" />
@@ -357,21 +369,17 @@
     <Content Include="Views\Product\DanhMuc.cshtml" />
     <Content Include="Views\Product\Details.cshtml" />
     <Content Include="Views\Cart\Index.cshtml" />
-<<<<<<< HEAD
     <Content Include="Views\Order\Create.cshtml" />
     <Content Include="Views\Order\Delete.cshtml" />
     <Content Include="Views\Order\Details.cshtml" />
     <Content Include="Views\Order\Edit.cshtml" />
     <Content Include="Views\ThongKe\Index.cshtml" />
     <Content Include="Views\ThongKe\Details.cshtml" />
-=======
     <Content Include="Views\ForgotPassword\Index.cshtml" />
->>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="Content\img\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

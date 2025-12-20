@@ -24,16 +24,16 @@ namespace FashionStore.Models
         public Nullable<int> CustomerID { get; set; }
         public Nullable<System.DateTime> OrderDate { get; set; }
         public string Status { get; set; }
+        public string FullName { get; set; }
+        public string PhoneNumber { get; set; }
         public string ShippingAddress { get; set; }
         public decimal TotalAmount { get; set; }
         public string PaymentMethod { get; set; }
-        public string FullName { get; set; }
-        public string PhoneNumber { get; set; }
         public string ShippingMethod { get; set; }
         public Nullable<decimal> ShippingFee { get; set; }
     
+        public virtual Customer Customer { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual Customer Customer { get; set; }
     }
 }
