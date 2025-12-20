@@ -31,7 +31,6 @@ namespace FashionStore.Models
         public virtual DbSet<CategoryGroup> CategoryGroups { get; set; }
         public virtual DbSet<Color> Colors { get; set; }
         public virtual DbSet<CustomerProfile> CustomerProfiles { get; set; }
-        public virtual DbSet<Customer> Customers { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<ProductImage> ProductImages { get; set; }
@@ -39,6 +38,10 @@ namespace FashionStore.Models
         public virtual DbSet<ProductVariant> ProductVariants { get; set; }
         public virtual DbSet<Size> Sizes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
+        public virtual DbSet<CartItem> CartItems { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

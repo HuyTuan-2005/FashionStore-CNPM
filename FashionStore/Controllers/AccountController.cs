@@ -147,6 +147,7 @@ namespace FashionStore.Controllers
                         customer.PasswordHash = PasswordHasher.HashPassword(customer.PasswordHash);
                         customer.CreatedAt = DateTime.Now;
                         customer.IsActive = true;
+                        customer.RoleID = 3;
 
                         customer.CustomerProfile = new CustomerProfile()
                         {

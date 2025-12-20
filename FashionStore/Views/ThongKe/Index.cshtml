@@ -1,0 +1,97 @@
+﻿@model IEnumerable<FashionStore.Models.Order>
+@{
+    ViewBag.Title = "Lịch sử mua hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 pt-4">
+    <h2 class="mb-4 text-center">BÁO CÁO MUA HÀNG</h2>
+
+    @* --- Phần Card thống kê giữ nguyên --- *@
+    <div class="row text-center mb-5">
+        <div class="col-md-3">
+            <div class="p-3 border rounded shadow-sm">
+                <small class="text-muted text-uppercase">Số đơn hàng</small>
+                <h3 class="fw-bold">@ViewBag.TotalOrders</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded shadow-sm bg-primary text-white">
+                <small class="text-uppercase">Tổng tiền đã chi</small>
+                <h3 class="fw-bold">@string.Format("{0:N0}đ", ViewBag.TotalSpent)</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded shadow-sm bg-success text-white">
+                <small class="text-uppercase">Đơn hoàn thành</small>
+                <h3 class="fw-bold">@ViewBag.Completed</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded shadow-sm bg-warning text-dark">
+                <small class="text-uppercase">Đang xử lý</small>
+                <h3 class="fw-bold">@ViewBag.Shipping</h3>
+            </div>
+        </div>
+    </div>
+
+    @* --- Bảng lịch sử giao dịch --- *@
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h5 class="mb-0 py-1">Lịch sử giao dịch</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Số tiền</th>
+                        <th>Phương thức</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th> @* Thêm tiêu đề cột mới *@
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr><td colspan="6" class="text-center py-4">Bạn chưa có đơn hàng nào.</td></tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">#@item.OrderID</td>
+                                <td>@(item.OrderDate.HasValue ? item.OrderDate.Value.ToString("dd/MM/yyyy") : "---")</td>
+                                <td class="text-danger fw-bold">@string.Format("{0:N0}đ", item.TotalAmount)</td>
+                                <td>@item.PaymentMethod</td>
+                                <td>
+                                    @if (item.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success">Thành công</span>
+                                    }
+                                    else if (item.Status == "Cancelled")
+                                    {
+                                        <span class="badge bg-danger">Đã hủy</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info text-dark">Đang xử lý</span>
+                                    }
+                                </td>
+                                @* Nút xem chi tiết *@
+                                <td class="text-center">
+                                    <a href="@Url.Action("Details", "ThongKe", new { id = item.OrderID })"
+                                       class="btn btn-sm btn-outline-primary shadow-sm">
+                                        <i class="bi bi-eye"></i> Xem chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -4,12 +4,11 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="253bf7a003df4817a2d47b17c2f4a24b" Name="Diagram1" ZoomLevel="80">
+      <Diagram DiagramId="253bf7a003df4817a2d47b17c2f4a24b" Name="Diagram1" ZoomLevel="75">
         <EntityTypeShape EntityType="FashionStoreModel.Category" Width="1.5" PointX="3" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="FashionStoreModel.CategoryGroup" Width="1.5" PointX="0.75" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="FashionStoreModel.Color" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="FashionStoreModel.CustomerProfile" Width="1.5" PointX="10.5" PointY="14.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="FashionStoreModel.Customer" Width="1.5" PointX="8.25" PointY="10.5" IsExpanded="true" />
         <EntityTypeShape EntityType="FashionStoreModel.OrderDetail" Width="1.5" PointX="12.75" PointY="3.5" IsExpanded="true" />
         <EntityTypeShape EntityType="FashionStoreModel.Order" Width="1.5" PointX="10.5" PointY="10.5" IsExpanded="true" />
         <EntityTypeShape EntityType="FashionStoreModel.ProductImage" Width="1.5" PointX="7.5" PointY="3.875" IsExpanded="true" />
@@ -19,14 +18,21 @@
         <AssociationConnector Association="FashionStoreModel.FK__Categorie__Group__00200768" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__Products__Catego__04E4BC85" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__ProductVa__Color__123EB7A3" ManuallyRouted="false" />
-        <AssociationConnector Association="FashionStoreModel.FK__CustomerP__Profi__797309D9" ManuallyRouted="false" />
-        <AssociationConnector Association="FashionStoreModel.FK__Orders__Customer__1BC821DD" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__OrderDeta__Order__208CD6FA" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__OrderDeta__Varia__2180FB33" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__ProductIm__Produ__17F790F9" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__ProductVa__Produ__114A936A" ManuallyRouted="false" />
         <AssociationConnector Association="FashionStoreModel.FK__ProductVa__SizeI__1332DBDC" ManuallyRouted="false" />
         <EntityTypeShape EntityType="FashionStoreModel.Role" Width="1.5" PointX="6" PointY="11.25" />
+        <EntityTypeShape EntityType="FashionStoreModel.CartItem" Width="1.5" PointX="13.125" PointY="10.625" />
+        <EntityTypeShape EntityType="FashionStoreModel.Cart" Width="1.5" PointX="10.875" PointY="18.125" />
+        <EntityTypeShape EntityType="FashionStoreModel.sysdiagram" Width="1.5" PointX="0.75" PointY="0.75" />
+        <AssociationConnector Association="FashionStoreModel.FK__CartItems__CartI__43D61337" />
+        <AssociationConnector Association="FashionStoreModel.FK__CartItems__Varia__44CA3770" />
+        <EntityTypeShape EntityType="FashionStoreModel.Customer" Width="1.5" PointX="8.25" PointY="10.5" />
+        <AssociationConnector Association="FashionStoreModel.FK__Carts__CustomerI__3E1D39E1" />
+        <AssociationConnector Association="FashionStoreModel.FK__CustomerP__Profi__3D5E1FD2" />
+        <AssociationConnector Association="FashionStoreModel.FK__Orders__Customer__5FB337D6" />
         <AssociationConnector Association="FashionStoreModel.FK_Customers_Role" />
       </Diagram>
     </edmx:Diagrams>

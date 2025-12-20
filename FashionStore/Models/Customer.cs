@@ -17,6 +17,7 @@ namespace FashionStore.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Customer()
         {
+            this.Carts = new HashSet<Cart>();
             this.Orders = new HashSet<Order>();
         }
     
@@ -28,6 +29,8 @@ namespace FashionStore.Models
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public Nullable<int> RoleID { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Cart> Carts { get; set; }
         public virtual CustomerProfile CustomerProfile { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }

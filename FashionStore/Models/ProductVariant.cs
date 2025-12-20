@@ -18,6 +18,7 @@ namespace FashionStore.Models
         public ProductVariant()
         {
             this.OrderDetails = new HashSet<OrderDetail>();
+            this.CartItems = new HashSet<CartItem>();
         }
     
         public int VariantID { get; set; }
@@ -33,5 +34,7 @@ namespace FashionStore.Models
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
         public virtual Product Product { get; set; }
         public virtual Size Size { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CartItem> CartItems { get; set; }
     }
 }

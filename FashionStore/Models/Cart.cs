@@ -12,26 +12,22 @@ namespace FashionStore.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Order
+    public partial class Cart
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Order()
+        public Cart()
         {
-            this.OrderDetails = new HashSet<OrderDetail>();
+            this.CartItems = new HashSet<CartItem>();
         }
     
-        public int OrderID { get; set; }
+        public int CartID { get; set; }
         public Nullable<int> CustomerID { get; set; }
-        public Nullable<System.DateTime> OrderDate { get; set; }
-        public string Status { get; set; }
-        public string ShippingAddress { get; set; }
-        public decimal TotalAmount { get; set; }
-        public string PaymentMethod { get; set; }
-        public string FullName { get; set; }
-        public string PhoneNumber { get; set; }
+        public string CartToken { get; set; }
+        public Nullable<System.DateTime> CreatedAt { get; set; }
+        public Nullable<System.DateTime> UpdatedAt { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+        public virtual ICollection<CartItem> CartItems { get; set; }
         public virtual Customer Customer { get; set; }
     }
 }
