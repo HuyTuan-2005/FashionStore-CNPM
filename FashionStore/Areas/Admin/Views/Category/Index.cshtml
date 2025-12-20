@@ -29,7 +29,11 @@
     <!-- Search -->
     <div class="card mb-6">
         <div class="card-content">
-            <input type="search" id="searchInput" class="form-control" placeholder="Tìm kiếm danh mục...">
+            @using (Html.BeginForm())
+            {
+                <input name="search" type="search" required="" id="searchInput" class="form-control"
+                       placeholder="Tìm kiếm danh mục...">
+            }
         </div>
     </div>
 
@@ -87,7 +91,7 @@
                     <label class="form-label">Danh mục cha <span class="text-danger">*</span></label>
                     @Html.DropDownList("GroupID", new SelectList(ViewBag.CategoryGroups, "GroupID", "GroupName"), "Chọn danh mục cha", new { @class = "form-control", @required = "required" })
                 </div>
-                
+
                 <div class="modal-footer">
                     <button class="btn btn-outline" onclick="closeModal('addCategoryModal')">Hủy</button>
                     <button class="btn btn-primary" type="submit">

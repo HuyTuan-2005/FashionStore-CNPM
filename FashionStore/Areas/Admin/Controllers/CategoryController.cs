@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using FashionStore.Models;
@@ -9,11 +10,16 @@ namespace FashionStore.Areas.Admin.Controllers
     {
         private readonly FashionStoreEntities _entities = new FashionStoreEntities();
         // GET: Admin/Category
-        public ActionResult Index()
+        public ActionResult Index(string search)
         {
+            var model = _entities.Categories.Include(pro => pro.Products);
+            
+            if (!string.IsNullOrEmpty(search))
+            {
+                model = model.Where(c => c.CategoryName.Contains(search));
+            }
             ViewBag.CategoryGroups = _entities.CategoryGroups.ToList();
-            var model = _entities.Categories.Include(pro => pro.Products).ToList();
-            return View(model);
+            return View(model.ToList());
         }
 
         public ActionResult Update(Category category)
