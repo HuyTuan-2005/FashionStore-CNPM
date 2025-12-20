@@ -40,8 +40,11 @@ namespace FashionStore.Models
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
+<<<<<<< HEAD
         public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
         public virtual DbSet<Customer> Customers { get; set; }
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

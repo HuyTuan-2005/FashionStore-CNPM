@@ -3,6 +3,9 @@ using FashionStore.Helpers;
 using FashionStore.Models;
 using System.Linq;
 using System.Web.Mvc;
+using FashionStore.ViewModels;
+using System.Data.Entity;
+using System.Web;
 
 namespace FashionStore.Controllers
 {
@@ -105,6 +108,8 @@ namespace FashionStore.Controllers
                     Session["CustomerUserName"] = cust.UserName;
                     Session["Customer"] = cust;
 
+                    MergeGuestCartToUserCart(cust.CustomerID);
+
                     if (cust.RoleID == 1 || cust.RoleID == 2)
                     {
                         return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
@@ -193,6 +198,126 @@ namespace FashionStore.Controllers
         {
             Session.Abandon();
             return RedirectToAction("Login");
+        }
+
+        //Merge cart
+        private void MergeGuestCartToUserCart(int customerID)
+        {
+            try
+            {
+                // LẤY CART TOKEN TỪ COOKIE
+                var cartToken = Request.Cookies["CartToken"]?.Value;
+
+                if (string.IsNullOrEmpty(cartToken))
+                {
+                    return; // Không có guest cart
+                }
+
+                // TÌM GUEST CART
+                var guestCart = _entities.Carts.FirstOrDefault(c =>
+                    c.CartToken == cartToken &&
+                    c.CustomerID == null);
+
+                if (guestCart == null)
+                {
+                    return; // Không có guest cart
+                }
+
+                // TÌM HOẶC TẠO USER CART
+                var userCart = _entities.Carts.FirstOrDefault(c => c.CustomerID == customerID);
+
+                if (userCart == null)
+                {
+                    // TẠO USER CART MỚI
+                    userCart = new Cart
+                    {
+                        CustomerID = customerID,
+                        CartToken = Guid.NewGuid().ToString(),
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+                    _entities.Carts.Add(userCart);
+                    _entities.SaveChanges();
+                }
+
+                // LẤY TẤT CẢ ITEMS TỪ GUEST CART
+                var guestItems = _entities.CartItems
+                    .Where(ci => ci.CartID == guestCart.CartID)
+                    .ToList();
+
+                foreach (var guestItem in guestItems)
+                {
+                    // KIỂM TRA XEM USER CART ĐÃ CÓ VARIANT NÀY CHƯA
+                    var existingItem = _entities.CartItems.FirstOrDefault(ci =>
+                        ci.CartID == userCart.CartID &&
+                        ci.VariantID == guestItem.VariantID);
+
+                    if (existingItem != null)
+                    {
+                        // CỘNG DỒN SỐ LƯỢNG
+                        existingItem.Quantity += guestItem.Quantity;
+                    }
+                    else
+                    {
+                        // THÊM MỚI VÀO USER CART
+                        _entities.CartItems.Add(new CartItem
+                        {
+                            CartID = userCart.CartID,
+                            VariantID = guestItem.VariantID,
+                            Quantity = guestItem.Quantity,
+                            AddedAt = DateTime.Now
+                        });
+                    }
+                }
+
+                // XÓA GUEST CART
+                _entities.CartItems.RemoveRange(guestItems);
+                _entities.Carts.Remove(guestCart);
+
+                userCart.UpdatedAt = DateTime.Now;
+                _entities.SaveChanges();
+
+                // XÓA COOKIE
+                if (Request.Cookies["CartToken"] != null)
+                {
+                    var cookie = new HttpCookie("CartToken")
+                    {
+                        Expires = DateTime.Now.AddDays(-1) // Xóa cookie
+                    };
+                    Response.Cookies.Add(cookie);
+                }
+
+                // CẬP NHẬT SESSION
+                UpdateCartSessionInAccountController(userCart.CartID);
+            }
+            catch (Exception)
+            {
+                // Log error nhưng không làm gián đoạn login
+            }
+        }
+        //Update Session
+        private void UpdateCartSessionInAccountController(int cartID)
+        {
+            try
+            {
+                var cartItems = _entities.CartItems
+                    .Where(ci => ci.CartID == cartID)
+                    .Include(ci => ci.ProductVariant)
+                    .ToList();
+
+                var viewModel = cartItems.Select(ci => new CartItemViewModel
+                {
+                    ProductID = ci.ProductVariant.ProductID,
+                    VariantID = ci.VariantID,
+                    Quantity = ci.Quantity
+                }).ToList();
+
+                Session["Cart"] = viewModel;
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
         }
     }
 }

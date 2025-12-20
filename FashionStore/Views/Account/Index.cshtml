@@ -1,13 +1,13 @@
 ﻿@model FashionStore.Models.CustomerProfile
 @{
     ViewBag.Title = "Thông tin cá nhân";
-    
+
 }
 
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
-            
+
             <div class="profile-form mb-5">
                 <!-- Header -->
                 <div class="mb-4">
@@ -28,8 +28,9 @@
                         <label for="FullName" class="form-label fs-6 text-dark fw-semibold">
                             Họ và tên <span class="text-danger">*</span>
                         </label>
-                        @Html.TextBoxFor(model => model.FullName, new { 
-                            @class = "form-control shadow-none px-3 py-2", 
+                        @Html.TextBoxFor(model => model.FullName, new
+                        {
+                            @class = "form-control shadow-none px-3 py-2",
                             placeholder = "Nhập họ và tên đầy đủ",
                             required = "required"
                         })
@@ -42,8 +43,9 @@
                             <label for="PhoneNumber" class="form-label fs-6 text-dark fw-semibold">
                                 Số điện thoại <span class="text-danger">*</span>
                             </label>
-                            @Html.TextBoxFor(model => model.PhoneNumber, new { 
-                                @class = "form-control shadow-none px-3 py-2", 
+                            @Html.TextBoxFor(model => model.PhoneNumber, new
+                            {
+                                @class = "form-control shadow-none px-3 py-2",
                                 placeholder = "0912345678",
                                 type = "tel",
                                 required = "required"
@@ -55,8 +57,9 @@
                             <label for="DateOfBirth" class="form-label fs-6 text-dark fw-semibold">
                                 Ngày sinh
                             </label>
-                            @Html.TextBoxFor(model => model.DateOfBirth, "{0:yyyy-MM-dd}", new { 
-                                @class = "form-control shadow-none px-3 py-2", 
+                            @Html.TextBoxFor(model => model.DateOfBirth, "{0:yyyy-MM-dd}", new
+                            {
+                                @class = "form-control shadow-none px-3 py-2",
                                 type = "date"
                             })
                             @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger small" })
@@ -86,43 +89,142 @@
                         <label for="Address" class="form-label fs-6 text-dark fw-semibold">
                             Địa chỉ
                         </label>
-                        @Html.TextBoxFor(model => model.Address, new { 
-                            @class = "form-control shadow-none px-3 py-2", 
+                        @Html.TextBoxFor(model => model.Address, new
+                        {
+                            @class = "form-control shadow-none px-3 py-2",
                             placeholder = "Số nhà, tên đường"
                         })
                         @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger small" })
                     </div>
 
                     <!-- Quận/Huyện và Thành phố -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="District" class="form-label fs-6 text-dark fw-semibold">
-                                Quận/Huyện
-                            </label>
-                            @Html.TextBoxFor(model => model.District, new { 
-                                @class = "form-control shadow-none px-3 py-2", 
-                                placeholder = "Quận 1, Quận 7..."
-                            })
-                            @Html.ValidationMessageFor(model => model.District, "", new { @class = "text-danger small" })
-                        </div>
+            <div class="row mb-4">
+                @*<div class="col-md-6">
+            <label for="District" class="form-label fs-6 text-dark fw-semibold">
+                Quận/Huyện
+            </label>
+            @Html.TextBoxFor(model => model.District, new {
+                @class = "form-control shadow-none px-3 py-2",
+                placeholder = "Quận 1, Quận 7..."
+            })
+            @Html.ValidationMessageFor(model => model.District, "", new { @class = "text-danger small" })
+        </div>
 
-                        <div class="col-md-6">
-                            <label for="City" class="form-label fs-6 text-dark fw-semibold">
-                                Tỉnh/Thành phố
-                            </label>
-                            @Html.TextBoxFor(model => model.City, new { 
-                                @class = "form-control shadow-none px-3 py-2", 
-                                placeholder = "TP. Hồ Chí Minh, Hà Nội..."
-                            })
-                            @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger small" })
-                        </div>
-                    </div>
+        <div class="col-md-6">
+            <label for="City" class="form-label fs-6 text-dark fw-semibold">
+                Tỉnh/Thành phố
+            </label>
+            @Html.TextBoxFor(model => model.City, new {
+                @class = "form-control shadow-none px-3 py-2",
+                placeholder = "TP. Hồ Chí Minh, Hà Nội..."
+            })
+            @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger small" })
+        </div>*@
+
+
+
+
+                <div class="mb-3">
+                    <label for="City" class="form-label fs-6 text-dark fw-semibold">
+                        Tỉnh / Thành phố <span class="text-danger">*</span>
+                    </label>
+
+                    @Html.DropDownListFor(
+                        model => model.City,
+                        new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+                        "-- Chọn tỉnh / thành phố --",
+                        new
+                        {
+                            @class = "form-control shadow-none px-3 py-2",
+                            id = "province",
+                            required = "required"
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="mb-3">
+                    <label for="City" class="form-label fs-6 text-dark fw-semibold">
+                        Quận / Huyện <span class="text-danger">*</span>
+                    </label>
+
+                    @Html.DropDownListFor(
+                        model => model.District,
+                        new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+                        "-- Chọn quận / huyện --",
+                        new
+                        {
+                            @class = "form-control shadow-none px-3 py-2",
+                            id = "district",
+                            required = "required"
+                        }
+                    )
+
+                    @Html.ValidationMessageFor(model => model.District, "", new { @class = "text-danger small" })
+                </div>
+
+
+
+
+            </div>
 
                     <button type="submit" name="submit" class="btn btn-primary btn-rounded-none  w-100 mb-1">Xác nhận</button>
                     <a href="@Url.Action("Index", "Product")" class="btn btn-dark btn-rounded-none  w-100">Trở lại</a>
-           
+
                 }
             </div>
         </div>
     </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        loadProvinces();
+    });
+
+    function loadProvinces() {
+        $.get("https://provinces.open-api.vn/api/?depth=1", function (res) {
+            $("#province").html('<option value="">-- Chọn tỉnh --</option>');
+            $.each(res, function (i, item) {
+                // lưu tên trực tiếp
+                $("#province").append(
+                    `<option value="${item.name}">${item.name}</option>`
+                );
+            });
+        });
+    }
+
+    $("#province").on("change", function () {
+        let provinceName = $(this).val(); // chính là tên tỉnh
+        $("#district").html('<option value="">-- Chọn quận --</option>');
+
+        if (!provinceName) return;
+
+        // Lấy code từ tên để fetch quận
+        $.get("https://provinces.open-api.vn/api/?depth=1", function (res) {
+            let province = res.find(p => p.name === provinceName);
+            if (!province) return;
+
+            $.get(`https://provinces.open-api.vn/api/p/${province.code}?depth=2`, function (res) {
+                $.each(res.districts, function (i, item) {
+                    // lưu tên quận trực tiếp
+                    $("#district").append(
+                        `<option value="${item.name}">${item.name}</option>`
+                    );
+                });
+            });
+        });
+    });
+
+    // ================= LẤY TÊN ĐỊA CHỈ =================
+    function getAddressText() {
+        let provinceName = $("#province option:selected").text();
+        let districtName = $("#district option:selected").text();
+
+        console.log(provinceName, districtName);
+    }
+</script>
+
+

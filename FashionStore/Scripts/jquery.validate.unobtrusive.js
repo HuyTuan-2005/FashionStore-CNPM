@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * @license
  * Unobtrusive validation support library for jQuery and jQuery Validate
@@ -6,12 +5,6 @@
  * Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
  * @version v4.0.0
  */
-=======
-// Unobtrusive validation support library for jQuery and jQuery Validate
-// Copyright (c) .NET Foundation. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
-// @version v3.2.11
->>>>>>> 82a78acd1f0f6034df7822c94d06d0f9eb79c05e
 
 /*jslint white: true, browser: true, onevar: true, undef: true, nomen: true, eqeqeq: true, plusplus: true, bitwise: true, regexp: true, newcap: true, immed: true, strict: false */
 /*global document: false, jQuery: false */
@@ -440,9 +433,6 @@
 
     return $jQval.unobtrusive;
 }));
-<<<<<<< HEAD
-
-// SIG // Begin signature block
 // SIG // MIInnwYJKoZIhvcNAQcCoIInkDCCJ4wCAQExDzANBglg
 // SIG // hkgBZQMEAgEFADB3BgorBgEEAYI3AgEEoGkwZzAyBgor
 // SIG // BgEEAYI3AgEeMCQCAQEEEBDgyQbOONQRoqMAEEvTUJAC
@@ -752,5 +742,3 @@
 // SIG // 6ne+GsUpKe3S40OxEo+i/fAo2CiQdjNV3dV/d36AjFx3
 // SIG // 1xc5mmXuD4FQz5kJEs10aA==
 // SIG // End signature block
-=======
->>>>>>> 82a78acd1f0f6034df7822c94d06d0f9eb79c05e

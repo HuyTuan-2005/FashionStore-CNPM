@@ -98,6 +98,8 @@
           <Property Name="ShippingAddress" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="TotalAmount" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="PaymentMethod" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingMethod" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShippingFee" Type="decimal" Precision="18" Scale="2" />
         </EntityType>
         <EntityType Name="ProductImages">
           <Key>
@@ -147,6 +149,7 @@
           <Property Name="SizeID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="SizeName" Type="nvarchar" MaxLength="20" Nullable="false" />
         </EntityType>
+<<<<<<< HEAD
         <EntityType Name="sysdiagrams">
           <Key>
             <PropertyRef Name="diagram_id" />
@@ -157,6 +160,8 @@
           <Property Name="version" Type="int" />
           <Property Name="definition" Type="varbinary(max)" />
         </EntityType>
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
         <Association Name="FK__CartItems__CartI__43D61337">
           <End Role="Carts" Type="Self.Carts" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -384,7 +389,10 @@
           <EntitySet Name="ProductVariants" EntityType="Self.ProductVariants" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Sizes" EntityType="Self.Sizes" Schema="dbo" store:Type="Tables" />
+<<<<<<< HEAD
           <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
           <AssociationSet Name="FK__CartItems__CartI__43D61337" Association="Self.FK__CartItems__CartI__43D61337">
             <End Role="Carts" EntitySet="Carts" />
             <End Role="CartItems" EntitySet="CartItems" />
@@ -486,7 +494,27 @@
           <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="City" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="District" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+<<<<<<< HEAD
           <NavigationProperty Name="Customer" Relationship="FashionStoreModel.FK__CustomerP__Profi__3D5E1FD2" FromRole="CustomerProfile" ToRole="Customer" />
+=======
+          <NavigationProperty Name="Customer" Relationship="Self.FK__CustomerP__Profi__797309D9" FromRole="CustomerProfile" ToRole="Customers" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustomerID" />
+          </Key>
+          <Property Name="CustomerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="CustomerProfile" Relationship="Self.FK__CustomerP__Profi__797309D9" FromRole="Customers" ToRole="CustomerProfile" />
+          <NavigationProperty Name="Orders" Relationship="Self.FK__Orders__Customer__1BC821DD" FromRole="Customers" ToRole="Orders" />
+          <Property Name="RoleID" Type="Int32" />
+          <NavigationProperty Name="Role" Relationship="FashionStoreModel.FK_Customers_Role" FromRole="Customer" ToRole="Role" />
+          <NavigationProperty Name="Carts" Relationship="FashionStoreModel.FK__Carts__CustomerI__3E1D39E1" FromRole="Customer" ToRole="Cart" />
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
         </EntityType>
         <EntityType Name="OrderDetail">
           <Key>
@@ -515,7 +543,12 @@
           <NavigationProperty Name="OrderDetails" Relationship="Self.FK__OrderDeta__Order__208CD6FA" FromRole="Orders" ToRole="OrderDetails" />
           <Property Name="FullName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="PhoneNumber" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+<<<<<<< HEAD
           <NavigationProperty Name="Customer" Relationship="FashionStoreModel.FK__Orders__Customer__5FB337D6" FromRole="Order" ToRole="Customer" />
+=======
+          <Property Name="ShippingMethod" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShippingFee" Type="Decimal" Precision="18" Scale="2" />
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
         </EntityType>
         <EntityType Name="ProductImage">
           <Key>
@@ -747,7 +780,10 @@
           <FunctionImport Name="sp_upgraddiagrams" />
           <EntitySet Name="CartItems" EntityType="FashionStoreModel.CartItem" />
           <EntitySet Name="Carts" EntityType="FashionStoreModel.Cart" />
+<<<<<<< HEAD
           <EntitySet Name="sysdiagrams" EntityType="FashionStoreModel.sysdiagram" />
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
           <AssociationSet Name="FK__CartItems__CartI__43D61337" Association="FashionStoreModel.FK__CartItems__CartI__43D61337">
             <End Role="Cart" EntitySet="Carts" />
             <End Role="CartItem" EntitySet="CartItems" />
@@ -756,11 +792,15 @@
             <End Role="ProductVariant" EntitySet="ProductVariants" />
             <End Role="CartItem" EntitySet="CartItems" />
           </AssociationSet>
+<<<<<<< HEAD
           <EntitySet Name="Customers" EntityType="FashionStoreModel.Customer" />
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
           <AssociationSet Name="FK__Carts__CustomerI__3E1D39E1" Association="FashionStoreModel.FK__Carts__CustomerI__3E1D39E1">
             <End Role="Customer" EntitySet="Customers" />
             <End Role="Cart" EntitySet="Carts" />
           </AssociationSet>
+<<<<<<< HEAD
           <AssociationSet Name="FK__CustomerP__Profi__3D5E1FD2" Association="FashionStoreModel.FK__CustomerP__Profi__3D5E1FD2">
             <End Role="Customer" EntitySet="Customers" />
             <End Role="CustomerProfile" EntitySet="CustomerProfiles" />
@@ -773,6 +813,8 @@
             <End Role="Role" EntitySet="Roles" />
             <End Role="Customer" EntitySet="Customers" />
           </AssociationSet>
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
         </EntityContainer>
         <EntityType Name="Role">
           <Key>
@@ -921,6 +963,84 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+<<<<<<< HEAD
+=======
+        <ComplexType Name="sp_helpdiagramdefinition_Result">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
+        <EntityType Name="CartItem">
+          <Key>
+            <PropertyRef Name="CartItemID" />
+          </Key>
+          <Property Name="CartItemID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CartID" Type="Int32" Nullable="false" />
+          <Property Name="VariantID" Type="Int32" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="AddedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Cart" Relationship="FashionStoreModel.FK__CartItems__CartI__43D61337" FromRole="CartItem" ToRole="Cart" />
+          <NavigationProperty Name="ProductVariant" Relationship="FashionStoreModel.FK__CartItems__Varia__44CA3770" FromRole="CartItem" ToRole="ProductVariant" />
+        </EntityType>
+        <EntityType Name="Cart">
+          <Key>
+            <PropertyRef Name="CartID" />
+          </Key>
+          <Property Name="CartID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerID" Type="Int32" />
+          <Property Name="CartToken" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="CartItems" Relationship="FashionStoreModel.FK__CartItems__CartI__43D61337" FromRole="Cart" ToRole="CartItem" />
+          <NavigationProperty Name="Customer" Relationship="FashionStoreModel.FK__Carts__CustomerI__3E1D39E1" FromRole="Cart" ToRole="Customer" />
+        </EntityType>
+        <Association Name="FK__CartItems__CartI__43D61337">
+          <End Type="FashionStoreModel.Cart" Role="Cart" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="FashionStoreModel.CartItem" Role="CartItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Cart">
+              <PropertyRef Name="CartID" />
+            </Principal>
+            <Dependent Role="CartItem">
+              <PropertyRef Name="CartID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__CartItems__Varia__44CA3770">
+          <End Type="FashionStoreModel.ProductVariant" Role="ProductVariant" Multiplicity="1" />
+          <End Type="FashionStoreModel.CartItem" Role="CartItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProductVariant">
+              <PropertyRef Name="VariantID" />
+            </Principal>
+            <Dependent Role="CartItem">
+              <PropertyRef Name="VariantID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Carts__CustomerI__3E1D39E1">
+          <End Type="FashionStoreModel.Customer" Role="Customer" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="FashionStoreModel.Cart" Role="Cart" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Customer">
+              <PropertyRef Name="CustomerID" />
+            </Principal>
+            <Dependent Role="Cart">
+              <PropertyRef Name="CustomerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -983,6 +1103,8 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="FashionStoreModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="ShippingFee" ColumnName="ShippingFee" />
+                <ScalarProperty Name="ShippingMethod" ColumnName="ShippingMethod" />
                 <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="OrderID" ColumnName="OrderID" />
@@ -1095,6 +1217,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+<<<<<<< HEAD
           <EntitySetMapping Name="sysdiagrams">
             <EntityTypeMapping TypeName="FashionStoreModel.sysdiagram">
               <MappingFragment StoreEntitySet="sysdiagrams">
@@ -1119,6 +1242,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+=======
+>>>>>>> 84b60aa56f4e1f323833f4ed3b274d58f84f510e
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

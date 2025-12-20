@@ -68,6 +68,11 @@ namespace FashionStore.Areas.Admin.Controllers
         {
             // try
             // {
+            if(model.Variants.Count == 0)
+            {
+                TempData["Error"] = "Vui lòng thêm ít nhất một biến thể sản phẩm.";
+                return RedirectToAction("Create");
+            }
             List<ProductImage> images = new List<ProductImage>();
 
             if (model.MainImage != null)

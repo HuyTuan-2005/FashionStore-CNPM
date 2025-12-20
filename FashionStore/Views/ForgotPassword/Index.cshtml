@@ -1,0 +1,122 @@
+﻿@{
+    ViewBag.Title = "Quên mật khẩu";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // nếu có layout
+}
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<style>
+    .forgot-card {
+        max-width: 420px;
+        margin: 60px auto;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+
+    .step-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 8px;
+    }
+</style>
+
+<div class="card forgot-card">
+    <div class="card-body p-4">
+        <h4 class="text-center mb-4">🔐 Quên mật khẩu</h4>
+
+        <!-- STEP 1 -->
+        <div id="step-phone">
+            <div class="step-title">Bước 1: Nhập email</div>
+            <div class="form-group mb-3">
+                <input type="email"
+                       id="email"
+                       class="form-control"
+                       placeholder="Email đã đăng ký" />
+
+            </div>
+            <button class="btn btn-primary w-100" onclick="sendOTP()">
+                Gửi mã OTP
+            </button>
+        </div>
+
+        <!-- STEP 2 -->
+        <div id="step-otp" style="display:none">
+            <div class="step-title">Bước 2: Nhập mã OTP</div>
+            <div class="form-group mb-3">
+                <input type="text"
+                       id="otp"
+                       class="form-control text-center"
+                       placeholder="Nhập mã OTP"
+                       maxlength="6" />
+            </div>
+            <button class="btn btn-success w-100" onclick="verifyOTP()">
+                Xác nhận OTP
+            </button>
+        </div>
+
+        <!-- STEP 3 -->
+        <div id="step-reset" style="display:none">
+            <div class="step-title">Bước 3: Đặt mật khẩu mới</div>
+            <div class="form-group mb-3">
+                <input type="password"
+                       id="newPassword"
+                       class="form-control"
+                       placeholder="Mật khẩu mới" />
+            </div>
+            <button class="btn btn-danger w-100" onclick="resetPassword()">
+                Đổi mật khẩu
+            </button>
+        </div>
+
+        <hr />
+
+        <div class="text-center">
+            <a href="/Account/Login">← Quay lại đăng nhập</a>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function sendOTP() {
+            $.post("/ForgotPassword/SendOTP", {
+                email: $("#email").val()
+            }, function (res) {
+                if (res.success) {
+                    alert("OTP đã được gửi qua email");
+                    $("#step-phone").hide();
+                    $("#step-otp").fadeIn();
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+        function verifyOTP() {
+            $.post("/ForgotPassword/VerifyOTP", {
+                otp: $("#otp").val()
+            }, function (res) {
+                if (res.success) {
+                    alert("OTP hợp lệ");
+                    $("#step-otp").hide();
+                    $("#step-reset").fadeIn();
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+
+        function resetPassword() {
+            $.post("/ForgotPassword/ResetPassword", {
+                newPassword: $("#newPassword").val()
+            }, function (res) {
+                if (res.success) {
+                    alert("Đổi mật khẩu thành công");
+                    window.location.href = "/Account/Login";
+                } else {
+                    alert(res.message);
+                }
+            });
+        }
+    </script>
+}

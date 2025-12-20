@@ -130,7 +130,7 @@ namespace FashionStore.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
             List<Customer> lstC = db.Customers.Where(t => t.RoleID == roleID).ToList();
-            if (lstC != null)
+            if (lstC.Count != 0)
             {
                 TempData["Error"] = "Tồn tại người dùng thuộc vai trò này. Không thể xoá!";
                 return RedirectToAction("Index");

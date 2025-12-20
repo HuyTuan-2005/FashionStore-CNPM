@@ -49,7 +49,7 @@
                     </div>
                     <div class="card-content">
                         <div class="form-group">
-                            <label class="form-label">Tên sản phẩm *</label>
+                            <label class="form-label">Tên sản phẩm <span class="text-danger">*</span></label>
                             <input type="text" name="ProductName" class="form-control" required
                                    placeholder="Nhập tên sản phẩm">
                         </div>
@@ -71,7 +71,7 @@
                     <div class="card-content">
                         <div class="grid grid-cols-2">
                             <div class="form-group">
-                                <label class="form-label">Giá bán *</label>
+                                <label class="form-label">Giá bán <span class="text-danger">*</span></label>
                                 <input type="number" name="BasePrice" class="form-control" required value="29990000" min="0"
                                        step="1000">
                             </div>
@@ -174,7 +174,7 @@
                     </div>
                     <div class="card-content">
                         <div class="form-group">
-                            <label class="form-label">Trạng thái sản phẩm *</label>
+                            <label class="form-label">Trạng thái sản phẩm <span class="text-danger">*</span></label>
                             <select name="IsActive" class="form-control" required>
                                 <option value="True" selected>Còn hàng</option>
                                 <option value="False">Hết hàng</option>
@@ -192,7 +192,7 @@
                     </div>
                     <div class="card-content">
                         <div class="form-group">
-                            <label class="form-label">Danh mục *</label>
+                            <label class="form-label">Danh mục <span class="text-danger">*</span></label>
                             <select name="CategoryID" class="form-control" required="">
                                 <option value="">Chọn danh mục</option>
                                 @foreach (var i in ViewBag.Categories)
@@ -212,12 +212,12 @@
                     </div>
                     <div class="card-content">
                         <div class="form-group">
-                            <label class="form-label">Ảnh chính *</label>
+                            <label class="form-label">Ảnh chính <span class="text-danger">*</span></label>
                             <div
                                 style="border: 2px dashed var(--border); border-radius: var(--radius); padding: 2rem; text-align: center; cursor: pointer;"
                                 onclick="document.getElementById('mainImage').click()">
                                 <input type="file" id="mainImage" name="mainImage" accept="image/*"
-                                       style="display: none;" onchange="previewImage(this, 'mainImagePreview')">
+                                       style="display: none;" onchange="previewImage(this, 'mainImagePreview')" required="">
                                 <div id="mainImagePreview">
                                     <svg
                                         style="width: 48px; height: 48px; color: var(--muted-foreground); margin: 0 auto 1rem;"

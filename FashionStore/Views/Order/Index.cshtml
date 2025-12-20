@@ -1,4 +1,5 @@
 ﻿@model List<FashionStore.Models.Order>
+@using FashionStore.Models
 @{
     ViewBag.Title = "Đơn hàng của tôi";
     
@@ -7,12 +8,12 @@
         switch (status)
         {
             case "Pending": return "Chờ xác nhận";
-            case "Confirmed": return "Đã xác nhận";
+           // case "Confirmed": return "Đã xác nhận";
             case "Processing": return "Đang xử lý";
-            case "Shipping": return "Đang giao hàng";
-            case "Delivered": return "Đã giao hàng";
+            case "Shipped": return "Đang giao hàng";
+            case "Completed": return "Đã giao hàng";
             case "Cancelled": return "Đã hủy";
-            case "Returned": return "Đã hoàn trả";
+            //case "Returned": return "Đã hoàn trả";
             default: return status;
         }
     };
@@ -24,7 +25,7 @@
             case "Pending": return "warning";
             case "Processing": return "primary";
             case "Shipped": return "info";
-            case "Completed": return "sucess";
+            case "Completed": return "success";
             case "Cancelled": return "danger";
             default: return "secondary";
         }
@@ -34,12 +35,12 @@
     {
         switch (status)
         {
-            case "Delivered": return "bi-check-circle-fill";
-            case "Shipping": return "bi-truck";
+            case "Completed": return "bi-check-circle-fill";
+            case "Shipped": return "bi-truck";
             case "Processing": return "bi-hourglass-split";
             case "Confirmed": return "bi-clipboard-check";
             case "Cancelled": return "bi-x-circle-fill";
-            case "Returned": return "bi-arrow-return-left";
+           // case "Returned": return "bi-arrow-return-left";
             default: return "bi-clock-fill";
         }
     };
@@ -89,14 +90,14 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewBag.CurrentStatus == "Shipping" ? "active" : "")"
-                           href="@Url.Action("Index", new { status = "Shipping" })">
+                        <a class="nav-link @(ViewBag.CurrentStatus == "Shipped" ? "active" : "")"
+                           href="@Url.Action("Index", new { status = "Shipped" })">
                             <i class="bi bi-truck me-2"></i>Đang giao
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link @(ViewBag.CurrentStatus == "Delivered" ? "active" : "")"
-                           href="@Url.Action("Index", new { status = "Delivered" })">
+                        <a class="nav-link @(ViewBag.CurrentStatus == "Completed" ? "active" : "")"
+                           href="@Url.Action("Index", new { status = "Completed" })">
                             <i class="bi bi-check-circle me-2"></i>Đã giao
                         </a>
                     </li>
@@ -266,15 +267,17 @@
 
                             <!-- Action Buttons -->
                             <div class="d-flex gap-2 mt-4">
-                                @if (order.Status == "Pending")
+                                @if (order.Status == OrderStatus.Pending.ToString() || order.Status == OrderStatus.Processing.ToString())
                                 {
-                                    <a href="@Url.Action("Cancel", "Order", new { id = order.OrderID })"
-                                       class="btn btn-danger"
-                                       onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')">
-                                        <i class="bi bi-x-circle me-2"></i>Hủy đơn hàng
-                                    </a>
+                                    using (Html.BeginForm("Cancel", "Order", new { id = order.OrderID }, FormMethod.Post, new { @class = "d-inline", onsubmit = "return confirm('Bạn có chắc muốn hủy đơn hàng này?');" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-x-circle me-2"></i>Hủy đơn hàng
+                                        </button>
+                                    }
                                 }
-                                @if (order.Status == "Delivered")
+                                @if (order.Status == "Completed")
                                 {
                                     <a href="@Url.Action("Review", "Order", new { id = order.OrderID })"
                                        class="btn btn-warning">

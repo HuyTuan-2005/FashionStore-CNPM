@@ -158,7 +158,10 @@ CREATE TABLE Orders
     PhoneNumber NVARCHAR(20),
     ShippingAddress NVARCHAR(255) NOT NULL,
     TotalAmount     DECIMAL(18, 2) NOT NULL,
-    PaymentMethod   NVARCHAR(50)                             -- COD/Chuyển khoản/Ví điện tử
+    PaymentMethod   NVARCHAR(50),                             -- COD/Chuyển khoản/Ví điện tử
+    ShippingMethod  NVARCHAR(50) NOT NULL DEFAULT 'Standard', -- Phương thức giao hàng (Standard, ...)
+    ShippingFee     DECIMAL(18, 2) NOT NULL DEFAULT 0,        -- Phí vận chuyển
+    CONSTRAINT CK_Orders_ShippingFee_NonNegative CHECK (ShippingFee >= 0) -- Đảm bảo phí vận chuyển không âm
 );
 
 -- ============================================
@@ -939,3 +942,6 @@ SET SKU = 'P' + FORMAT(pv.ProductID, '0000') + '-' + FORMAT(pv.ColorID, '00') +
 --UPDATE ProductVariants
 --SET Status = 'Available'
 --where status = 'In Stock'
+
+
+

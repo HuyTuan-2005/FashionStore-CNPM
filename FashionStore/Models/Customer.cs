@@ -19,6 +19,7 @@ namespace FashionStore.Models
         {
             this.Carts = new HashSet<Cart>();
             this.Orders = new HashSet<Order>();
+            this.Carts = new HashSet<Cart>();
         }
     
         public int CustomerID { get; set; }
@@ -35,5 +36,7 @@ namespace FashionStore.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders { get; set; }
         public virtual Role Role { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Cart> Carts { get; set; }
     }
 }
