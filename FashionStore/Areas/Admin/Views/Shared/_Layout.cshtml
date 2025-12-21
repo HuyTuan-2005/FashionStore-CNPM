@@ -67,7 +67,7 @@
                 </svg>
                 Đơn hàng
             </a>
-            <a href="@Url.Action("Index", "User")">
+            <a href="@Url.Action("Index", "User")"
                 class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("user")) ? "active" : "")"
                 data-page="user">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -78,7 +78,7 @@
                 </svg>
                 Người dùng
             </a>
-            <a href="@Url.Action("Index", "Backup")">
+            <a href="@Url.Action("Index", "Backup")"
                 class="nav-item @(Request.Url.Segments.Any(x => x.ToLowerInvariant().Contains("backup")) ? "active" : "")"
                 data-page="backup">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
