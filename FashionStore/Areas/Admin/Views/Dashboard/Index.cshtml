@@ -1,201 +1,166 @@
-﻿
+﻿@* Dashboard Admin *@
 @{
-    ViewBag.Title = "Dashboard";
+    ViewBag.Title = "Dashboard Admin";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
-<!-- Breadcrumb -->
-<div class="breadcrumb">
-    <span>Dashboard</span>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<div class="container-fluid mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-uppercase m-0">Thống kê & Báo cáo</h3>
+            <p class="text-muted small mb-0">Dữ liệu từ @ViewBag.FromDate đến @ViewBag.ToDate</p>
+        </div>
+        <button onclick="window.print()" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-print me-1"></i> Xuất báo cáo
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Từ ngày</label>
+                    <input type="date" id="uiFromDate" value="@ViewBag.FromDate" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small">Đến ngày</label>
+                    <input type="date" id="uiToDate" value="@ViewBag.ToDate" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <button type="button" class="btn btn-success w-100" onclick="submitDashboardFilter()">
+                        <i class="fas fa-filter me-1"></i> Lọc dữ liệu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("RevenueReport","Dashboard")" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 border-start border-primary border-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small fw-bold text-uppercase">Tổng doanh thu</div>
+                        <h4 class="fw-bold mt-2 mb-0">@String.Format("{0:N0}", ViewBag.TotalRevenue) đ</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("DonHangReport","Dashboard")" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 border-start border-success border-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small fw-bold text-uppercase">Tổng đơn hàng</div>
+                        <h4 class="fw-bold mt-2 mb-0">@ViewBag.TotalOrders</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("CustomersReport","Dashboard")" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 border-start border-info border-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small fw-bold text-uppercase">Tổng khách hàng</div>
+                        <h4 class="fw-bold mt-2 mb-0">@ViewBag.TotalCustomers</h4>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <a href="@Url.Action("SanPhamReport","Dashboard")" class="text-decoration-none text-dark">
+                <div class="card shadow-sm border-0 border-start border-warning border-4 h-100">
+                    <div class="card-body">
+                        <div class="text-muted small fw-bold text-uppercase">Sản Phẩm</div>
+                        <h4 class="fw-bold mt-2 mb-0">@ViewBag.TotalProductsh4>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 fw-bold text-primary"><i class="fas fa-chart-line me-2"></i>Biểu đồ doanh thu theo ngày</h6>
+                </div>
+                <div class="card-body">
+                    <div style="height: 350px;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-<!-- Content -->
-<div class="content-area">
-    <div class="mb-6">
-        <h1>Dashboard</h1>
-        <p class="text-muted mt-1">Tổng quan hệ thống Admin Panel</p>
-    </div>
+@* --- SECTION FORMS: Chứa form ẩn để xử lý submit dữ liệu --- *@
+@section forms {
+    @using (Html.BeginForm("Index", "Dashboard", FormMethod.Get, new { id = "hiddenDashboardFilter", @class = "d-none" }))
+    {
+        <input type="hidden" name="fromDate" id="hiddenFromDate" />
+        <input type="hidden" name="toDate" id="hiddenToDate" />
+    }
+}
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-4 mb-6">
-        <div class="card">
-            <div class="card-content">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted">Tổng sản phẩm</span>
-                    <svg style="width: 24px; height: 24px; color: var(--primary);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                    </svg>
-                </div>
-                <h2>1,234</h2>
-                <p class="text-muted" style="font-size: 12px;">+12% so với tháng trước</p>
-            </div>
-        </div>
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Hàm đồng bộ giá trị từ giao diện vào form ẩn và gửi đi
+        function submitDashboardFilter() {
+            document.getElementById('hiddenFromDate').value = document.getElementById('uiFromDate').value;
+            document.getElementById('hiddenToDate').value = document.getElementById('uiToDate').value;
+            document.getElementById('hiddenDashboardFilter').submit();
+        }
 
-        <div class="card">
-            <div class="card-content">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted">Tổng đơn hàng</span>
-                    <svg style="width: 24px; height: 24px; color: var(--success);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                    </svg>
-                </div>
-                <h2>856</h2>
-                <p class="text-muted" style="font-size: 12px;">+8% so với tháng trước</p>
-            </div>
-        </div>
+        // Lấy dữ liệu và vẽ biểu đồ
+        $(document).ready(function() {
+            $.getJSON('@Url.Action("RevenueByDay", "Dashboard")', {
+                fromDate: '@ViewBag.FromDate',
+                toDate: '@ViewBag.ToDate'
+            }, function (res) {
+                const labels = res.map(x => x.Date);
+                const values = res.map(x => x.Total);
 
-        <div class="card">
-            <div class="card-content">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted">Doanh thu</span>
-                    <svg style="width: 24px; height: 24px; color: var(--warning);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                </div>
-                <h2>128M₫</h2>
-                <p class="text-muted" style="font-size: 12px;">+15% so với tháng trước</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-content">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <span class="text-muted">Người dùng</span>
-                    <svg style="width: 24px; height: 24px; color: var(--info);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <h2>432</h2>
-                <p class="text-muted" style="font-size: 12px;">+24% so với tháng trước</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Recent Orders -->
-    <div class="card mb-6">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <h3 class="card-title">Đơn hàng gần đây</h3>
-                <a href="@Url.Action("Index", "Order")" class="btn btn-outline btn-sm">Xem tất cả</a>
-            </div>
-        </div>
-        <div class="card-content" style="padding: 0;">
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Mã đơn</th>
-                            <th>Khách hàng</th>
-                            <th>Sản phẩm</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày đặt</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>#ORD-1234</strong></td>
-                            <td>Nguyễn Văn A</td>
-                            <td>iPhone 15 Pro Max</td>
-                            <td>36.980.000₫</td>
-                            <td><span class="badge badge-success">Hoàn thành</span></td>
-                            <td>01/11/2025</td>
-                        </tr>
-                        <tr>
-                            <td><strong>#ORD-1235</strong></td>
-                            <td>Trần Thị B</td>
-                            <td>MacBook Air M2</td>
-                            <td>32.990.000₫</td>
-                            <td><span class="badge badge-info">Đang giao</span></td>
-                            <td>01/11/2025</td>
-                        </tr>
-                        <tr>
-                            <td><strong>#ORD-1236</strong></td>
-                            <td>Lê Văn C</td>
-                            <td>iPad Pro 11"</td>
-                            <td>28.980.000₫</td>
-                            <td><span class="badge badge-primary">Đang xử lý</span></td>
-                            <td>01/11/2025</td>
-                        </tr>
-                        <tr>
-                            <td><strong>#ORD-1237</strong></td>
-                            <td>Phạm Thị D</td>
-                            <td>Apple Watch Ultra 2</td>
-                            <td>24.990.000₫</td>
-                            <td><span class="badge badge-warning">Chờ xác nhận</span></td>
-                            <td>31/10/2025</td>
-                        </tr>
-                        <tr>
-                            <td><strong>#ORD-1238</strong></td>
-                            <td>Hoàng Văn E</td>
-                            <td>AirPods Max</td>
-                            <td>13.990.000₫</td>
-                            <td><span class="badge badge-warning">Chờ xác nhận</span></td>
-                            <td>31/10/2025</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sales Chart -->
-    <div class="grid grid-cols-2">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Doanh thu theo tháng</h3>
-            </div>
-            <div class="card-content">
-                <canvas id="salesChart" style="max-height: 300px;"></canvas>
-                <p class="text-muted text-center mt-4">Biểu đồ doanh thu 6 tháng gần đây</p>
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">Sản phẩm bán chạy</h3>
-            </div>
-            <div class="card-content">
-                <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p style="font-weight: 500;">iPhone 15 Pro Max</p>
-                            <p class="text-muted" style="font-size: 12px;">456 sản phẩm</p>
-                        </div>
-                        <span class="badge badge-success">+12%</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p style="font-weight: 500;">MacBook Air M2</p>
-                            <p class="text-muted" style="font-size: 12px;">324 sản ph   m</p>
-                        </div>
-                        <span class="badge badge-success">+8%</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p style="font-weight: 500;">AirPods Pro Gen 2</p>
-                            <p class="text-muted" style="font-size: 12px;">289 sản phẩm</p>
-                        </div>
-                        <span class="badge badge-success">+15%</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p style="font-weight: 500;">iPad Pro 11"</p>
-                            <p class="text-muted" style="font-size: 12px;">234 sản phẩm</p>
-                        </div>
-                        <span class="badge badge-success">+6%</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p style="font-weight: 500;">Apple Watch Ultra 2</p>
-                            <p class="text-muted" style="font-size: 12px;">198 sản phẩm</p>
-                        </div>
-                        <span class="badge badge-success">+10%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                new Chart(document.getElementById('revenueChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Doanh thu (VNĐ)',
+                            data: values,
+                            borderColor: '#4e73df',
+                            backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                            tension: 0.3,
+                            fill: true,
+                            pointRadius: 3,
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: v => v.toLocaleString() + ' đ'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

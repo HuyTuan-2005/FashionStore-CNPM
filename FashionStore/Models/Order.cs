@@ -24,11 +24,11 @@ namespace FashionStore.Models
         public Nullable<int> CustomerID { get; set; }
         public Nullable<System.DateTime> OrderDate { get; set; }
         public string Status { get; set; }
+        public string FullName { get; set; }
+        public string PhoneNumber { get; set; }
         public string ShippingAddress { get; set; }
         public decimal TotalAmount { get; set; }
         public string PaymentMethod { get; set; }
-        public string FullName { get; set; }
-        public string PhoneNumber { get; set; }
         public string ShippingMethod { get; set; }
         public Nullable<decimal> ShippingFee { get; set; }
     

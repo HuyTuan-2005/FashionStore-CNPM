@@ -1,0 +1,143 @@
+﻿@model FashionStore.Models.Order
+@{
+    ViewBag.Title = "Chi tiết đơn hàng #" + Model.OrderID;
+
+    // --- Cập nhật logic để khớp với Database lưu bằng chữ ---
+    Func<string, string> GetStatusText = (status) =>
+    {
+        switch (status)
+        {
+            case "Pending": return "Chờ xác nhận";
+            case "Processing": return "Đang xử lý";
+            case "Shipped": return "Đang giao hàng";
+            case "Completed": return "Hoàn thành";
+            case "Cancelled": return "Đã hủy";
+            case "Returned": return "Đã hoàn trả";
+            default: return status;
+        }
+    };
+
+    Func<string, string> GetStatusClass = (status) =>
+    {
+        switch (status)
+        {
+            case "Pending": return "warning text-dark";
+            case "Processing": return "primary";
+            case "Shipped": return "info text-white";
+            case "Completed": return "success";
+            case "Cancelled": return "danger";
+            default: return "dark";
+        }
+    };
+
+    Func<string, string> GetStatusIcon = (status) =>
+    {
+        switch (status)
+        {
+            case "Completed": return "bi-check-circle-fill";
+            case "Shipped": return "bi-truck";
+            case "Processing": return "bi-hourglass-split";
+            case "Cancelled": return "bi-x-circle-fill";
+            default: return "bi-clock-fill";
+        }
+    };
+}
+
+<div class="container mt-4 mb-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 text-primary fw-bold">
+                <i class="bi bi-receipt"></i> ĐƠN HÀNG #@Model.OrderID
+            </h5>
+            <span class="badge rounded-pill bg-@GetStatusClass(Model.Status) px-3 py-2">
+                <i class="bi @GetStatusIcon(Model.Status) me-1"></i>
+                @GetStatusText(Model.Status)
+            </span>
+        </div>
+
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6 border-end">
+                    <p class="text-muted mb-1 text-uppercase small fw-bold">Thông tin giao hàng</p>
+                    <h6 class="fw-bold">@Model.FullName</h6>
+                    <p class="mb-1 text-secondary"><i class="bi bi-telephone me-2"></i>@Model.PhoneNumber</p>
+                    <p class="mb-0 text-secondary"><i class="bi bi-geo-alt me-2"></i>@Model.ShippingAddress</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="text-muted mb-1 text-uppercase small fw-bold">Chi tiết đặt hàng</p>
+                    <h6>@Model.OrderDate.Value.ToString("dd/MM/yyyy HH:mm")</h6>
+                    <p class="text-muted mb-1 text-uppercase small fw-bold mt-2">Thanh toán</p>
+                    <span class="badge bg-light text-dark border fw-bold">@Model.PaymentMethod</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 45%">Sản phẩm</th>
+                            <th class="text-center">Số lượng</th>
+                            <th class="text-end">Đơn giá</th>
+                            <th class="text-end">Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var detail in Model.OrderDetails)
+                        {
+                            var totalItem = detail.Quantity * detail.Price;
+                            <tr>
+                                <td>
+                                    @* Hiển thị tên sản phẩm từ bảng Product thông qua ProductVariant *@
+                                    <div class="fw-bold text-dark">
+                                        @(detail.ProductVariant?.Product?.ProductName ?? "Sản phẩm không xác định")
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        @if (detail.ProductVariant != null)
+                                        {
+                                            <span class="badge bg-light text-secondary border-0 ps-0">
+                                                Size: @(detail.ProductVariant.Size?.SizeName ?? "N/A"),
+                                                Màu: @(detail.ProductVariant.Color?.ColorName ?? "N/A")
+                                            </span>
+                                        }
+                                    </div>
+                                </td>
+                                <td class="text-center">@detail.Quantity</td>
+                                <td class="text-end">@string.Format("{0:N0}", detail.Price) đ</td>
+                                <td class="text-end fw-bold">@string.Format("{0:N0}", totalItem) đ</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold text-uppercase pt-4">Tổng tiền thanh toán:</td>
+                            <td class="text-end text-danger fs-4 fw-bold pt-4">
+                                @string.Format("{0:N0}", Model.TotalAmount) đ
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="mt-4 border-top pt-3 d-flex justify-content-between">
+                <a href="@Url.Action("Index", "ThongKe")" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-arrow-left"></i> Quay lại lịch sử
+                </a>
+                @if (Model.Status == "Pending" || Model.Status == "Processing")
+                {
+                    <button class="btn btn-danger px-4" onclick="confirmCancel(@Model.OrderID)">
+                        Hủy đơn hàng
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Bạn có thể thêm Script hỗ trợ hủy đơn nếu cần *@
+<script>
+    function confirmCancel(id) {
+        if(confirm("Bạn có chắc chắn muốn hủy đơn hàng #" + id + " không?")) {
+            // Thực hiện gọi Ajax hoặc Redirect tới Action CancelOrder
+        }
+    }
+</script>

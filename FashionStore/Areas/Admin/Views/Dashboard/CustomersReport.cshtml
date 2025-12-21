@@ -1,0 +1,196 @@
+﻿@model IEnumerable<FashionStore.Models.Customer>
+@{
+    ViewBag.Title = "Phân tích khách hàng chuyên sâu";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+
+    <div class="mb-2">
+        <a href="@Url.Action("Index", "Dashboard")" class="btn btn-link btn-sm text-decoration-none text-muted p-0">
+            <i class="fas fa-long-arrow-alt-left me-1"></i> Quay lại
+        </a>
+    </div>
+
+    <div class="mb-4">
+        <h4 class="fw-bold text-dark d-flex align-items-center">
+            <span class="badge bg-primary-soft text-primary me-2 p-2">
+                <i class="fas fa-user-friends"></i>
+            </span>
+            PHÂN TÍCH CHI TIÊU & GIỮ CHÂN KHÁCH HÀNG
+        </h4>
+    </div>
+
+    @* Widget Thống kê nhanh *@
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Tổng khách hàng</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count()</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Khách tiềm năng (Chưa mua)</div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Count(c => !c.Orders.Any(o => o.Status == "Completed"))</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* Bộ lọc *@
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-3"><input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control" /></div>
+        <div class="col-md-3"><input type="date" name="toDate" value="@ViewBag.ToDate" class="form-control" /></div>
+        <div class="col-md-2"><button class="btn btn-success w-100">Lọc dữ liệu</button></div>
+    </form>
+
+    <div class="row mb-4">
+        @* Biểu đồ chi tiêu theo ngày *@
+        <div class="col-md-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3"><h6 class="m-0 fw-bold text-primary">Biến động chi tiêu theo ngày</h6></div>
+                <div class="card-body" style="height:300px"><canvas id="spendingChart"></canvas></div>
+            </div>
+        </div>
+        @* Biểu đồ tỷ lệ quay lại *@
+        <div class="col-md-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3"><h6 class="m-0 fw-bold text-info">Tỷ lệ khách quay lại (Retention)</h6></div>
+                <div class="card-body" style="height:300px"><canvas id="retentionChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        @* Bảng Top 10 Đại gia *@
+        <div class="col-md-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 bg-warning text-dark"><h6 class="m-0 fw-bold">🏆 Top 10 khách hàng chi tiêu nhiều nhất</h6></div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead><tr><th>Tài khoản</th><th class="text-end">Tổng chi tiêu</th></tr></thead>
+                        <tbody id="topSpendingBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @* Bảng chi tiết khách hàng có CLV *@
+        <div class="col-md-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3"><h6 class="m-0 fw-bold text-dark">Danh sách chi tiết & Giá trị vòng đời (CLV)</h6></div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-sm mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Tài khoản</th>
+                                <th>Email</th>
+                                <th>Số đơn</th>
+                                <th class="text-end">Tổng chi tiêu (CLV)</th>
+                            </tr>
+                        </thead>
+
+                        @foreach (var c in Model)
+                        {
+                            var allOrders = c.Orders.Count();
+                            var completedOrders = c.Orders.Count(o => o.Status == "Completed");
+                            var totalSpent = (decimal?)(c.Orders.Where(o => o.Status == "Completed").Sum(o => o.TotalAmount)) ?? 0m;
+
+                            string rowClass = "";
+                            string badge = "";
+
+                            // 1. Ưu tiên Đại gia hoặc Trung thành
+                            if (totalSpent > 1000000 || (allOrders >= 2 && completedOrders >= 2))
+                            {
+                                rowClass = "table-success";
+                                badge = totalSpent > 1000000 ? "<span class='badge bg-danger'>Đại gia</span>" : "<span class='badge bg-success'>Trung thành</span>";
+                            }
+                            // 2. Khách tiềm năng (Vàng)
+                            else if (allOrders >= 2 && completedOrders == 1)
+                            {
+                                rowClass = "table-warning";
+                                badge = "<span class='badge bg-warning text-dark'>Tiềm năng</span>";
+                            }
+                            // 3. Khách chưa mua gì (Đỏ nhạt/Xám)
+                            else if (allOrders == 0)
+                            {
+                                rowClass = "table-light text-danger"; // Dòng màu trắng xám, chữ đỏ
+                                badge = "<span class='badge bg-secondary'>Chưa mua hàng</span>";
+                            }
+
+                            <tr class="@rowClass">
+                                <td class="ps-3">
+                                    @c.UserName @Html.Raw(badge)
+                                </td>
+                                <td>@c.Email</td>
+                                <td class="text-center">@completedOrders / @allOrders đơn</td>
+                                <td class="text-end fw-bold text-danger pe-3">@totalSpent.ToString("N0") đ</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const fromDate = '@ViewBag.FromDate';
+        const toDate = '@ViewBag.ToDate';
+
+        // 1. Biểu đồ chi tiêu theo ngày (Bar Chart)
+        fetch(`@Url.Action("GetCustomerSpendingByDay","Dashboard")?fromDate=${fromDate}&toDate=${toDate}`)
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('spendingChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.map(x => x.Date),
+                    datasets: [{ label: 'VNĐ', data: data.map(x => x.Total), backgroundColor: '#4e73df' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        });
+
+        // 2. Biểu đồ Tỷ lệ quay lại (Doughnut Chart) - Đã cập nhật 3 màu
+        fetch(`@Url.Action("GetCustomerRetention","Dashboard")`)
+        .then(res => res.json())
+        .then(data => {
+            new Chart(document.getElementById('retentionChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: data.map(x => x.label),
+                    datasets: [{
+                        data: data.map(x => x.value),
+                        backgroundColor: data.map(x => x.color) // Lấy màu từ API trả về
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                    }
+                }
+            });
+        });
+        // 3. Load bảng Top 10 khách hàng
+        fetch(`@Url.Action("GetTop10SpendingCustomers","Dashboard")`)
+        .then(res => res.json())
+        .then(data => {
+            let html = '';
+            data.forEach(item => {
+                html += `<tr>
+                    <td class="fw-bold">${item.Name}</td>
+                    <td class="text-end text-danger fw-bold">${item.TotalSpent.toLocaleString()} đ</td>
+                </tr>`;
+            });
+            $('#topSpendingBody').html(html);
+        });
+    </script>
+}

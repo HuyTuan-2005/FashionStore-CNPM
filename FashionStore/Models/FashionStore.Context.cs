@@ -27,6 +27,8 @@ namespace FashionStore.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<CartItem> CartItems { get; set; }
+        public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<CategoryGroup> CategoryGroups { get; set; }
         public virtual DbSet<Color> Colors { get; set; }
@@ -37,10 +39,9 @@ namespace FashionStore.Models
         public virtual DbSet<ProductImage> ProductImages { get; set; }
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<ProductVariant> ProductVariants { get; set; }
-        public virtual DbSet<Size> Sizes { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
-        public virtual DbSet<CartItem> CartItems { get; set; }
-        public virtual DbSet<Cart> Carts { get; set; }
+        public virtual DbSet<Size> Sizes { get; set; }
+        public virtual DbSet<sysdiagram> sysdiagrams { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {
@@ -97,9 +98,9 @@ namespace FashionStore.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_dropdiagram", diagramnameParameter, owner_idParameter);
         }
     
-        public virtual int sp_getAllUser()
+        public virtual ObjectResult<sp_getAllUser_Result> sp_getAllUser()
         {
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("sp_getAllUser");
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<sp_getAllUser_Result>("sp_getAllUser");
         }
     
         public virtual ObjectResult<sp_helpdiagramdefinition_Result> sp_helpdiagramdefinition(string diagramname, Nullable<int> owner_id)

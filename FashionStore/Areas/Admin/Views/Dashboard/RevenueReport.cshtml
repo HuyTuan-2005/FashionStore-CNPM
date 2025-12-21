@@ -1,0 +1,87 @@
+﻿@model IEnumerable<FashionStore.Models.Order>
+@{
+    ViewBag.Title = "Báo cáo doanh thu";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="mb-2">
+        <a href="@Url.Action("Index", "Dashboard")" class="btn btn-link btn-sm text-decoration-none text-muted p-0">
+            <i class="fas fa-long-arrow-alt-left me-1"></i> Quay lại
+        </a>
+    </div>
+    <h4 class="fw-bold mb-3">💰 BÁO CÁO DOANH THU</h4>
+
+    <form method="get" class="row g-2 mb-4">
+        <div class="col-md-3">
+            <input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <input type="date" name="toDate" value="@ViewBag.ToDate" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-success w-100">Lọc</button>
+        </div>
+    </form>
+
+    <div class="card mb-4">
+        <div class="card-header fw-bold">Doanh thu theo ngày</div>
+        <div class="card-body" style="height:350px">
+            <canvas id="revChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header fw-bold">Chi tiết đơn hoàn thành</div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Ngày</th>
+                        <th>Khách</th>
+                        <th class="text-end">Doanh thu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int i = 1;
+                        foreach (var o in Model)
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@o.OrderDate</td>
+                                <td>@o.Customer.UserName</td>
+                                <td class="text-end">@String.Format("{0:N0}", o.TotalAmount)</td>
+                            </tr>
+                            i++;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+fetch('@Url.Action("RevenueByDay","Dashboard")?fromDate=@ViewBag.FromDate&toDate=@ViewBag.ToDate')
+.then(res=>res.json())
+.then(data=>{
+    new Chart(document.getElementById('revChart'),{
+        type:'line',
+        data:{
+            labels:data.map(x=>x.Date),
+            datasets:[{
+                label:'VNĐ',
+                data:data.map(x=>x.Total),
+                fill:true,
+                tension:0.4
+            }]
+        },
+        options:{ responsive:true, maintainAspectRatio:false }
+    });
+});
+    </script>
+}
