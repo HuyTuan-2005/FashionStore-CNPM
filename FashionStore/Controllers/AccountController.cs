@@ -107,6 +107,7 @@ namespace FashionStore.Controllers
 
                     Session["CustomerUserName"] = cust.UserName;
                     Session["Customer"] = cust;
+                    Session["RoleID"] = cust.RoleID.ToString();
 
                     MergeGuestCartToUserCart(cust.CustomerID);
 
@@ -118,6 +119,8 @@ namespace FashionStore.Controllers
                     TempData["Success"] = "Đăng nhập thành công";
                     return RedirectToAction("Index", "Product");
                 }
+
+
                 else
                 {
                     ModelState.AddModelError("", "Tên đăng nhập hoặc mật khẩu không đúng");
