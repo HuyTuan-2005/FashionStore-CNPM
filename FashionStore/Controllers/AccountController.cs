@@ -82,13 +82,6 @@ namespace FashionStore.Controllers
             return View();
         }
 
-        public ActionResult Login2(int id = 1)
-        {
-            // demo đăng nhập
-            Session["Customer"] = _entities.Customers.FirstOrDefault(x => x.CustomerID == id);
-            return RedirectToAction("Index", "Home");
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Login(Customer cus)
